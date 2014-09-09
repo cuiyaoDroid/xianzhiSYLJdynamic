@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">列车动态</string>
+    <string name="version">1.0</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="drop_dowm">下拉刷新</string>
+    <string name="release_update">松开刷新</string>
+    <string name="loading">正在加载...</string>
+    <string name="seen_more">更多</string>
+    <string name="recoderbutton">刻录</string>
+    <string name="stopbutton">停止</string>
+    <string name="noSDcard">检测到手机没有存储卡！请插入手机存储卡再开启本应用</string>
+    <string name="maxDuration">已经达到最长录制时间</string>
+    <string name="downloadvideo"><u>播放视频</u></string>
+	<string name="remain208">还可以输入240个字</string>
+	<string name="hint_import_input">请输入您要发布的信息</string>
+</resources>

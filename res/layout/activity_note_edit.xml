@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="运送旅客人数"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/passage_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="客票进款"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/tick_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="旅客伤亡"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/passager_die_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="运送行包件数"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/pakage_num_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="餐营进款"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/mela_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="职工伤亡"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/employ_die_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="票款丢失\u3000\u3000"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/tick_lose_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp" >
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="餐营进款"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp"
+            android:visibility="invisible" >
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="职工伤亡"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:imeOptions="flagNoExtractUi"
+            android:padding="6dp"
+            android:singleLine="true"
+            android:textSize="12sp"
+            android:visibility="invisible" >
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal"
+        android:weightSum="1" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|top"
+            android:text="行车记事\u3000\u3000"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/note_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/radiu_tableview_bg"
+            android:ems="10"
+            android:gravity="left|top"
+            android:imeOptions="flagNoExtractUi"
+            android:minLines="6"
+            android:padding="6dp"
+            android:textSize="12sp" >
+        </EditText>
+    </LinearLayout>
+
+</LinearLayout>

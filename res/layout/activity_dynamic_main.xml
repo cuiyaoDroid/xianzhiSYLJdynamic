@@ -1,0 +1,173 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_top"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/goback_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/btn_top_back"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="12dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/img_title_train" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="16dip"
+            android:layout_height="16dip"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/imageView2"
+            android:indeterminateDrawable="@drawable/common_loading4"
+            android:layout_marginLeft="8dp"
+            android:visibility="gone" />
+        <ImageButton
+            android:id="@+id/right_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/btn_top_new"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="@drawable/bg_search"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/search_edit"
+            android:layout_width="0dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_search_input"
+            android:hint="输入您要查询的车次"
+            android:imeOptions="flagNoExtractUi|actionSearch"
+            android:singleLine="true"
+            android:paddingLeft="8dp"
+            android:textSize="13sp" />
+        <ImageButton
+            android:id="@+id/setting_btn"
+            android:layout_width="28dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="15dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/btn_search"
+            android:scaleType="fitXY"
+            android:src="@drawable/button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:background="@drawable/bg_train_title"
+        android:orientation="horizontal"
+        android:weightSum="6" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:text="车次"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.8"
+            android:gravity="center"
+            android:text="发车日期"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:text="始发站"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="终到站"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="当值班组"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+	<!--  
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="行车区间"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+-->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="状态"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+    </LinearLayout>
+    <com.xianzhi.tool.view.PullDownListView
+        android:id="@+id/pulldownlist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ListView
+            android:id="@+id/dynamic_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+    </com.xianzhi.tool.view.PullDownListView>
+</LinearLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingRight="10dp" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView2"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/img_train_line_last" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/imageView1"
+        android:adjustViewBounds="true"
+        android:layout_marginLeft="-13dp"
+        android:src="@drawable/img_train_end"
+         />
+
+    <TextView
+        android:id="@+id/time_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imageView2"
+        android:layout_below="@+id/imageView1"
+        android:text="15:32"
+        android:textColor="@color/white"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/locate_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/imageView1"
+        android:layout_toLeftOf="@+id/time_txt"
+        android:text="TextView"
+        android:textColor="@color/white"
+        android:layout_marginBottom="3dp"
+        android:textSize="15sp" />
+
+</RelativeLayout>

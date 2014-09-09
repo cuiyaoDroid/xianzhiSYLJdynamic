@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xianzhisylj.dynamic"
+    android:versionCode="1"
+    android:versionName="@string/version" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon_main_train"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity android:name="com.xianzhisylj.dynamic.InitActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--
+            <intent-filter>
+                <action android:name="com.xianzhisylj.dynamic" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.LoginActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.addNewDynamicActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.DynamicMainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.TabDetailActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.TrainInfoActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.NoteInfoActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.NoteEditActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.GroupInfoActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.ImportWorkInfoActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.ImportWorkEditActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.SecuityInfoActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.ReviewInfoActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisylj.dynamic.CompartmentActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisecuritycheck.main.SecurityMainActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisecuritycheck.main.addNewInforActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisecuritycheck.main.AddnotifiUserListActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.xianzhisecuritycheck.main.SecurityDetailActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,179 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tc="http://schemas.android.com/apk/res/com.xianzhisylj.dynamic"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="4dp" >
+
+
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/bg_top"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <ImageButton
+            android:id="@+id/goback_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/btn_top_back"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="12dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/img_title_safe" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" >
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_banner" />
+
+        <LinearLayout
+            android:id="@+id/pain_page"
+            android:layout_width="160dp"
+            android:layout_height="100dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_stat"
+            android:orientation="vertical"
+            android:weightSum="1" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.2" >
+
+                <ImageView
+                    android:id="@+id/prev_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp"
+                    android:layout_gravity="left|center"
+                    android:paddingLeft="8dp"
+                    android:src="@drawable/btn_prev" />
+
+                <TextView
+                    android:id="@+id/time_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/next_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp"
+                    android:layout_gravity="right|center"
+                    android:paddingRight="8dp"
+                    android:src="@drawable/btn_next" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.8"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <com.xianzhi.tool.view.TasksCompletedView
+                    android:id="@+id/tasks_view"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    tc:circleColor="@color/circle_color"
+                    tc:radius="22dip"
+                    tc:ringColor="@color/ring_color"
+                    tc:strokeWidth="10dip" />
+
+                <TextView
+                    android:id="@+id/tasks_txt"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:lineSpacingMultiplier="1.3"
+                    android:text="text"
+                    android:textColor="@color/black"
+                    android:textSize="11sp" />
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2" >
+
+                    <ProgressBar
+                        android:id="@+id/progressCanderBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <com.xianzhi.tool.view.PullDownListView
+        android:id="@+id/pulldownlist"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <ListView
+            android:id="@+id/receive_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+    </com.xianzhi.tool.view.PullDownListView>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/right_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/btn_top_new"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/right_btn"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</LinearLayout>

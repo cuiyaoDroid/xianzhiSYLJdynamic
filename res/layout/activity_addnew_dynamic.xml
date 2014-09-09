@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white" >
+
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_top"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/goback_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/btn_top_back"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:text="新建"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" >
+        </TextView>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="16dip"
+            android:layout_height="16dip"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/imageView2"
+            android:indeterminateDrawable="@drawable/common_loading4"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/right_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/btn_top_new"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button" />
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/code_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/radiu_list_bg"
+        android:hint="请输入车次"
+        android:imeOptions="flagNoExtractUi"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+
+    <EditText
+        android:id="@+id/data_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/radiu_list_bg"
+        android:editable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="请输入发车时间"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+
+    <EditText
+        android:id="@+id/team_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/radiu_list_bg"
+        android:hint="请输入当值班组"
+        android:imeOptions="flagNoExtractUi"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+
+    <EditText
+        android:id="@+id/team_length_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/radiu_list_bg"
+        android:hint="请输入编组长度"
+        android:imeOptions="flagNoExtractUi"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+
+</LinearLayout>

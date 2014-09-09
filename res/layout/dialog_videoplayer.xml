@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/seekbar"
+            android:layout_alignRight="@+id/seekbar"
+            android:layout_below="@+id/seekbar"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:id="@+id/play_lay" >
+
+            <ImageButton
+                android:id="@+id/play_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/button"
+                android:padding="2dp"
+                android:src="@android:drawable/ic_media_pause" />
+
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/surface"
+            android:layout_alignRight="@+id/surface"
+            android:layout_below="@+id/surface" />
+
+        <SurfaceView
+            android:id="@+id/surface"
+            android:layout_width="380dip"
+            android:layout_height="260dip"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+             />
+        
+    </RelativeLayout>
+<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" 
+            android:layout_marginBottom="5dp"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/cancal_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/bg_bottom_normal"
+                android:src="@drawable/bottom_tool_bg" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/cancal_btn"
+                android:layout_alignLeft="@+id/cancal_btn"
+                android:layout_alignRight="@+id/cancal_btn"
+                android:layout_alignTop="@+id/cancal_btn"
+                android:gravity="center"
+                android:text="关闭"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+</RelativeLayout>
