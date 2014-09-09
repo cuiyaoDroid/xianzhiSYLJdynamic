@@ -38,14 +38,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.xianzhi.stool.L;
+import com.xianzhi.stool.T;
 import com.xianzhi.tool.db.ContactListHelper;
 import com.xianzhi.tool.db.ContactListHolder;
 import com.xianzhi.tool.db.DynamicListHelper;
 import com.xianzhi.tool.db.DynamicListHolder;
+import com.xianzhi.tool.db.KeyworkAndRecordHelper;
+import com.xianzhi.tool.db.KeyworkAndRecordHolder;
 import com.xianzhi.tool.db.PatrolHelper;
 import com.xianzhi.tool.db.PatrolHolder;
+import com.xianzhi.tool.db.ReviewHolder;
 import com.xianzhi.tool.db.lock;
 import com.xianzhi.webtool.MyMultipartEntity.ProgressListener;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
@@ -162,8 +167,9 @@ public class HttpJsonTool {
 			HttpPost httpRequest = new HttpPost(ServerUrl
 					+ "/train/list.json?token=" + SecurityCheckApp.token);
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			if(minId!=-1){
-				params.add(new BasicNameValuePair("minId", String.valueOf(minId)));
+			if (minId != -1) {
+				params.add(new BasicNameValuePair("minId", String
+						.valueOf(minId)));
 			}
 			params.add(new BasicNameValuePair("pageSize", String
 					.valueOf(PAGE_SIZE)));
@@ -210,8 +216,10 @@ public class HttpJsonTool {
 		}
 		return SUCCESS;
 	}
-	public synchronized String addNewDynamicTrain(Context context,String trainCode,String startTime
-			,String currentTeam,String teamLength) {
+
+	public synchronized String addNewDynamicTrain(Context context,
+			String trainCode, String startTime, String currentTeam,
+			String teamLength) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
 			if (cookieInfo != null) {
@@ -242,7 +250,8 @@ public class HttpJsonTool {
 			if (error.length() > 0) {
 				return ERROR + error;
 			}
-			//JSONObject object = jsonObject.getJSONObject("train");
+			JSONObject object = jsonObject.getJSONObject("train");
+			insertTrainInfo(context, object);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -262,6 +271,7 @@ public class HttpJsonTool {
 		}
 		return SUCCESS;
 	}
+
 	private void insertTrainList(Context context, JSONArray list)
 			throws JSONException {
 		DynamicListHelper helper = new DynamicListHelper(context);
@@ -301,18 +311,362 @@ public class HttpJsonTool {
 		helper.close();
 	}
 
+	private void insertTrainInfo(Context context, JSONObject json)
+			throws JSONException {
+		DynamicListHelper helper = new DynamicListHelper(context);
+		int id = json.optInt("id");
+		String board_train_code = json.optString("board_train_code");
+		long start_time = json.optLong("start_time");
+		String from_station_name = json.optString("from_station_name");
+		String to_station_name = json.optString("to_station_name");
+		String current_team = json.optString("current_team");
+		int driving_status = json.optInt("driving_status");
+		int user_id = json.optInt("user_id");
+		String job_number = json.optString("job_number");
+		String user_name = json.optString("user_name");
+		String photo = json.optString("photo");
+		String phone = json.optString("phone");
+		int department_id = json.optInt("department_id");
+		String department_name = json.optString("department_name");
+		int position_id = json.optInt("position_id");
+		String position_name = json.optString("position_name");
+		String team_length = json.optString("team_length");
+		DynamicListHolder holder = new DynamicListHolder(id, board_train_code,
+				start_time, from_station_name, to_station_name, current_team,
+				driving_status, user_id, job_number, user_name, photo, phone,
+				department_id, department_name, position_id, position_name,
+				team_length);
+		synchronized (lock.Lock) {
+			helper.insert(holder, helper.getWritableDatabase());
+		}
+		helper.close();
+	}
+
+	public synchronized String getKeyworkAndRecord(Context context, int trainId) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl
+					+ "/keyworkAndRecord/getByTrainId/1.json?token="
+					+ SecurityCheckApp.token);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("train_id", String
+					.valueOf(trainId)));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				gotoLoginView(context);
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONObject crewRecord = jsonObject.getJSONObject("crewRecord");
+			JSONObject keywork = jsonObject.getJSONObject("keywork");
+			insertKeyworkAndRecord(context,crewRecord,keywork);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
+	public synchronized String saveKeyworkAndRecord(Context context, KeyworkAndRecordHolder holder) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl
+					+ "/keyworkAndRecord/save.json?token="
+					+ SecurityCheckApp.token);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("train_id", String.valueOf(holder.getTrain_id())));
+			params.add(new BasicNameValuePair("context", holder.getContext()));
+			params.add(new BasicNameValuePair("passengerCount", String.valueOf(holder.getPassenger_cnt())));
+			params.add(new BasicNameValuePair("packetCount", String.valueOf(holder.getPacket_cnt())));
+			params.add(new BasicNameValuePair("passengerReceipts", String.valueOf(holder.getPassenger_rcpt())));
+			params.add(new BasicNameValuePair("cateringReceipts", String.valueOf(holder.getCatering_rcpt())));
+			params.add(new BasicNameValuePair("passengerMiss", String.valueOf(holder.getPassenger_miss())));
+			params.add(new BasicNameValuePair("receiptsMiss", String.valueOf(holder.getReceipts_miss())));
+			params.add(new BasicNameValuePair("workerMiss", String.valueOf(holder.getWorker_miss())));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				gotoLoginView(context);
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONObject crewRecord = jsonObject.getJSONObject("crewRecord");
+			JSONObject keywork = jsonObject.getJSONObject("keywork");
+			insertKeyworkAndRecord(context,crewRecord,keywork);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
+	
+	private void insertKeyworkAndRecord(Context context, JSONObject crewRecord,
+			JSONObject keywork) {
+		KeyworkAndRecordHelper helper = new KeyworkAndRecordHelper(context);
+		int train_id = crewRecord.optInt("train_id");
+		String strcontext = keywork.optString("context");
+		float passenger_cnt = crewRecord.optInt("passenger_cnt");
+		float packet_cnt = crewRecord.optInt("packet_cnt");
+		float passenger_rcpt = crewRecord.optInt("passenger_rcpt");
+		float catering_rcpt = crewRecord.optInt("catering_rcpt");
+		float passenger_miss = crewRecord.optInt("passenger_miss");
+		float receipts_miss = crewRecord.optInt("receipts_miss");
+		float worker_miss = crewRecord.optInt("worker_miss");
+		String notes = crewRecord.optString("notes");
+
+		KeyworkAndRecordHolder holder = new KeyworkAndRecordHolder(train_id,
+				strcontext, passenger_cnt, packet_cnt, passenger_rcpt,
+				catering_rcpt, passenger_miss, receipts_miss, worker_miss,
+				notes);
+		helper.insert(holder);
+		helper.close();
+	}
+
+	
+	public synchronized String getReviewList(Context context, int trainId) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl
+					+ "/review/getByTrainId/1.json?token="
+					+ SecurityCheckApp.token);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("train_id", String
+					.valueOf(trainId)));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				gotoLoginView(context);
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONArray reviewArray = jsonObject.getJSONArray("review");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
+	
+	public synchronized String saveReviewList(Context context, ReviewHolder holder) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl
+					+ "/review/save.json?token="
+					+ SecurityCheckApp.token);
+			
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("train_id", String
+					.valueOf(holder.getTrain_id())));
+			params.add(new BasicNameValuePair("userId", String
+					.valueOf(holder.getUser_id())));
+			params.add(new BasicNameValuePair("message", String
+					.valueOf(holder.getMessage())));
+			params.add(new BasicNameValuePair("status", String
+					.valueOf(holder.getStatus())));
+			params.add(new BasicNameValuePair("type", String
+					.valueOf(holder.getType())));
+			params.add(new BasicNameValuePair("createTime", String
+					.valueOf(holder.getCreate_time())));
+			
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				gotoLoginView(context);
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONObject model = jsonObject.getJSONObject("model");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
+	public synchronized String getTrainCoachList(Context context, int trainId) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl
+					+ "/train/getTrainCoachList.json?token="
+					+ SecurityCheckApp.token);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("train_id", String
+					.valueOf(trainId)));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				gotoLoginView(context);
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONArray coachList = jsonObject.getJSONArray("coachList");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
 	private void gotoLoginView(Context context) {
 		state403 = false;
 		httpjsontool = null;
 		SecurityCheckApp.token = "";
 		try {
 			Intent intent = new Intent(context, LoginActivity.class);
+			T.show(context, "ÄúµÄÕËºÅÒÑÔÚÆäËûÉè±¸ÉÏµÇÂ¼£¬ÇëÖØÐÂµÇÂ¼", Toast.LENGTH_LONG);
 			context.startActivity(intent);
 		} catch (Exception e) {
 
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * °²È«¹ÜÀí
+	 * @param context
+	 */
+	
 	public synchronized void checkOutDepartmentContact(Context context) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
