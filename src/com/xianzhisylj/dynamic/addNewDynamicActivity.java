@@ -4,16 +4,21 @@ import java.text.SimpleDateFormat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
+import com.xianzhi.stool.T;
 import com.xianzhi.tool.view.CustomTimeSeterHoldDialog;
 import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhialarm.listener.TimeDialogListener;
+import com.xianzhisecuritycheck.main.SecurityCheckApp;
 
 public class addNewDynamicActivity extends Activity implements OnClickListener {
 	private EditText code_edit;
@@ -27,6 +32,7 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_addnew_dynamic);
+		initProgressDialog();
 		initContentView();
 	}
 
@@ -40,7 +46,7 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 		right_btn.setOnClickListener(this);
 	}
 
-	private String curtime;
+	private String curtime="";
 
 	@SuppressLint("SimpleDateFormat")
 	@Override
@@ -70,11 +76,24 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
-
+	private ProgressDialog progreeDialog;
+	private void initProgressDialog() {
+		progreeDialog = new ProgressDialog(this);
+		progreeDialog.setTitle("");
+		progreeDialog.setMessage("正在初始化信息请稍等...");
+		progreeDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	}
 	private void commit() {
+		
 		final String str_code=code_edit.getText().toString().trim();
 		final String str_team=team_edit.getText().toString().trim();
 		final String str_team_length=team_length_edit.getText().toString().trim();
+		if(str_code.length()==0||str_team.length()==0||str_team_length.length()==0
+				||curtime.length()==0){
+			T.show(getApplicationContext(), "请填写全部信息", Toast.LENGTH_LONG);
+			return;
+		}
+		progreeDialog.show();
 		AsyncTask<Void, Void, String>task=new AsyncTask<Void, Void, String>(){
 
 			@Override
@@ -87,9 +106,27 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 			protected void onPostExecute(String result) {
 				// TODO Auto-generated method stub
 				super.onPostExecute(result);
+				progreeDialog.dismiss();
+				if(result.startsWith(HttpJsonTool.ERROR403)){
+					gotoLoginView();
+					return;
+				}else if(result.startsWith(HttpJsonTool.ERROR)){
+					T.show(getApplicationContext(), result.replace(HttpJsonTool.ERROR, ""), Toast.LENGTH_LONG);
+				}else if(result.startsWith(HttpJsonTool.SUCCESS)){
+					T.show(getApplicationContext(), "创建成功", Toast.LENGTH_LONG);
+					finish();
+				}
 			}
 		};
 		task.execute();
 	}
-
+	private void gotoLoginView() {
+		SecurityCheckApp.token = "";
+		try {
+			Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+			T.show(getApplicationContext(), "您的账号已在其他设备上登录，请重新登录", Toast.LENGTH_LONG);
+			startActivity(intent);
+		} catch (Exception e) {
+		}
+	}
 }

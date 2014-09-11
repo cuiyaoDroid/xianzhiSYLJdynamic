@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.example.web.image.ImageDownloader;
+import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhisylj.dynamic.R;
 
 import android.content.Context;
@@ -45,16 +47,13 @@ public class GridListAdapter extends SimpleAdapter {
 		return image;
 
 	}
-
+	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		View result = super.getView(position, convertView, parent);
 		ImageView head_img = (ImageView) result.findViewById(R.id.head_img);
-		Bitmap bgimg = getImageFromAssetsFile((String)styles.get(position).get("img"));
-		if(bgimg!=null){
-			head_img.setImageBitmap(bgimg);
-		}
+		downloader.download(HttpJsonTool.ServerUrl+(String)styles.get(position).get("img"), head_img);
 		TextView name = (TextView) result.findViewById(R.id.name_txt);
 		name.setText(Html.fromHtml((String)styles.get(position).get("name")));
 		return result;
@@ -71,13 +70,14 @@ public class GridListAdapter extends SimpleAdapter {
 	}
 
 	private Context context;
-
+	private ImageDownloader downloader;
 	@SuppressWarnings("unchecked")
 	public GridListAdapter(Context context,
 			List<? extends Map<String, ?>> data, int resource, String[] from,
 			int[] to) {
 		super(context, data, resource, from, to);
 		this.context = context;
+		downloader=new ImageDownloader(context, 0);
 		styles = (List<Map<String, Object>>) data;
 	}
 

@@ -2,19 +2,25 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
-    <style name="AppTheme" parent="@android:Theme.Light.NoTitleBar.Fullscreen">
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme" parent="Theme.Sherlock.Light">
+
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="actionBarStyle">@style/Theme.MyTheme.ActionBar2</item>
+        <item name="android:actionBarStyle">@style/Theme.MyTheme.ActionBar2</item>
+    </style>
+
+    <style name="Theme.MyTheme.ActionBar2" parent="Widget.Sherlock.Light.ActionBar.Solid">
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="tab_item_background">

@@ -10,7 +10,7 @@
         android:layout_height="30dp"
         android:background="@drawable/bg_group_title"
         android:orientation="horizontal"
-        android:weightSum="5" >
+        android:weightSum="3.2" >
 
         <TextView
             android:layout_width="0dp"
@@ -48,14 +48,6 @@
             android:textColor="@color/text_gray"
             android:textSize="12sp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.8"
-            android:gravity="center"
-            android:text="乘务员"
-            android:textColor="@color/text_gray"
-            android:textSize="12sp" />
     </LinearLayout>
 
     <ListView
@@ -63,5 +55,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp" />
 
 </LinearLayout>

@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import com.xianzhisylj.dynamic.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -15,12 +13,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 public class GroupInfoAdapter extends SimpleAdapter {
 	// 用于动态的载入一个界面文件
@@ -55,7 +49,7 @@ public class GroupInfoAdapter extends SimpleAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		View result = super.getView(position, convertView, parent);
-
+		/*
 		RelativeLayout re_img_1 = (RelativeLayout) result
 				.findViewById(R.id.re_img_1);
 		ImageView head_img_1 = (ImageView) result.findViewById(R.id.head_img_1);
@@ -102,7 +96,7 @@ public class GroupInfoAdapter extends SimpleAdapter {
 					callTellNum(em_tels[0]);
 				}
 			});
-		}
+		}*/
 		return result;
 	}
 

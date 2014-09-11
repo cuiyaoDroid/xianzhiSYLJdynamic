@@ -21,6 +21,16 @@
                 android:text="TextView:import_work"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:visibility="gone"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"/>
+
         </LinearLayout>
     </ScrollView>
 

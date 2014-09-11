@@ -18,13 +18,14 @@ public class DynamicListHolder {
 	private int position_id;
 	private String position_name;
 	private String team_length;
-
+	private int isFinal;
+	private int isRead;
 	public DynamicListHolder(int id, String board_train_code, long start_time,
 			String from_station_name, String to_station_name,
 			String current_team, int driving_status, int user_id,
 			String job_number, String user_name, String photo, String phone,
 			int department_id, String department_name, int position_id,
-			String position_name, String team_length) {
+			String position_name, String team_length,int isFinal,int isRead) {
 		super();
 		this.id = id;
 		this.board_train_code = board_train_code;
@@ -43,6 +44,24 @@ public class DynamicListHolder {
 		this.position_id = position_id;
 		this.position_name = position_name;
 		this.team_length = team_length;
+		this.isFinal=isFinal;
+		this.isRead=isRead;
+	}
+	
+	public int getIsRead() {
+		return isRead;
+	}
+
+	public void setIsRead(int isRead) {
+		this.isRead = isRead;
+	}
+
+	public int getIsFinal() {
+		return isFinal;
+	}
+
+	public void setIsFinal(int isFinal) {
+		this.isFinal = isFinal;
 	}
 
 	public int getId() {

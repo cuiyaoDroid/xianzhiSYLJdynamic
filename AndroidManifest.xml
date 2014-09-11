@@ -51,6 +51,10 @@
             android:screenOrientation="landscape" >
         </activity>
         <activity
+            android:name="com.xianzhisylj.dynamic.commitActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
             android:name="com.xianzhisylj.dynamic.TrainInfoActivity"
             android:screenOrientation="landscape" >
         </activity>

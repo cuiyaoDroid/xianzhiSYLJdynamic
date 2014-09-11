@@ -7,6 +7,8 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.http.SslCertificate.DName;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,11 +24,15 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xianzhi.stool.Constant.ConValue;
 import com.xianzhi.tool.db.DynamicHelper;
 import com.xianzhi.tool.db.DynamicHolder;
+import com.xianzhi.tool.db.DynamicListHelper;
+import com.xianzhi.tool.db.ReviewHelper;
+import com.xianzhi.tool.db.ReviewHolder;
 import com.xianzhi.tool.db.TrainHelper;
 import com.xianzhi.tool.db.TrainHolder;
+import com.xianzhi.webtool.HttpJsonTool;
+import com.xianzhisecuritycheck.main.SecurityMainActivity;
 
 @SuppressWarnings("deprecation")
 public class TabDetailActivity extends TabActivity {
@@ -40,25 +46,82 @@ public class TabDetailActivity extends TabActivity {
 	public static String UserId = null;
 	public static String token = "";
 	private LinearLayout train_info_layout;
-
+	public static String mTextviewArray[] = { "车次信息", "编组情况", "重点工作", "乘务记录",
+			"提交报告", "审阅记录" };
+	private boolean ismySelf=false;
+	@SuppressWarnings("rawtypes")
+	private Class mTabClassArray[];
+	int isRead=0;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_detail_tab);
 		train_info_layout = (LinearLayout) findViewById(R.id.train_info_layout);
 		refreshTrainInfo();
+		if(isRead!=1&&!ismySelf){
+			sendReview();
+		}
 		init();
 	}
+	private void sendReview(){
+		AsyncTask<Void, Void, String> task =new AsyncTask<Void, Void, String>() {
 
+			@Override
+			protected String doInBackground(Void... params) {
+				// TODO Auto-generated method stub
+				
+				ReviewHolder holder=new ReviewHolder(-1, train_id
+						, HttpJsonTool.userId, "", "", ""
+						, "", 1, 1, -1);
+				return HttpJsonTool.getInstance().saveReview(getApplicationContext(), holder);
+			}
+			@Override
+			protected void onPostExecute(String result) {
+				// TODO Auto-generated method stub
+				super.onPostExecute(result);
+				if(result==null){
+					return;
+				}
+				if(result.startsWith(HttpJsonTool.SUCCESS)){
+					DynamicListHelper helper=new DynamicListHelper(getApplicationContext());
+					helper.setRead(train_id);
+					helper.close();
+				}
+			}
+		};
+		task.execute();
+	}
+	private int train_id;
+	private int user_id=-1;
+	private int isFinal=-1;
 	private void refreshTrainInfo() {
 		train_info_layout.removeAllViews();
 
-		int id = getIntent().getIntExtra("id", -1);
-		if (id == -1) {
+		train_id = getIntent().getIntExtra("id", -1);
+		user_id = getIntent().getIntExtra("user_id", -1);
+		ismySelf=user_id==HttpJsonTool.userId;
+		isRead = getIntent().getIntExtra("isRead", -1);
+		isFinal = getIntent().getIntExtra("isFinal", -1);
+		if (train_id == -1) {
 			return;
 		}
+		if(ismySelf&&isFinal==0){
+			mTabClassArray = new Class[]{ TrainInfoActivity.class,
+					GroupInfoActivity.class,
+					ImportWorkEditActivity.class,// ImportWorkInfoActivity.class,
+					NoteEditActivity.class, commitActivity.class,
+					ReviewInfoActivity.class };
+			findViewById(R.id.RadioButton4).setVisibility(View.VISIBLE);
+		}else{
+			mTabClassArray = new Class[]{ TrainInfoActivity.class,
+					GroupInfoActivity.class,
+					ImportWorkInfoActivity.class,
+					NoteInfoActivity.class, commitActivity.class,
+					ReviewInfoActivity.class };
+			findViewById(R.id.RadioButton4).setVisibility(View.GONE);
+		}
 		DynamicHelper Dhelper = new DynamicHelper(getApplicationContext());
-		DynamicHolder Dholder = Dhelper.selectData_Id(id);
+		DynamicHolder Dholder = Dhelper.selectData_Id(user_id);
 		Dhelper.close();
 		if (Dholder == null) {
 			return;
@@ -142,15 +205,17 @@ public class TabDetailActivity extends TabActivity {
 		}
 
 	}
+
 	int currentTab;
+
 	private void init() {
 
 		m_tabHost = getTabHost();
 
-		int count = ConValue.mTabClassArray.length;
+		int count = mTabClassArray.length;
 		for (int i = 0; i < count; i++) {
-			TabSpec tabSpec = m_tabHost.newTabSpec(ConValue.mTextviewArray[i])
-					.setIndicator(ConValue.mTextviewArray[i])
+			TabSpec tabSpec = m_tabHost.newTabSpec(mTextviewArray[i])
+					.setIndicator(mTextviewArray[i])
 					.setContent(getTabItemIntent(i));
 			m_tabHost.addTab(tabSpec);
 		}
@@ -161,32 +226,32 @@ public class TabDetailActivity extends TabActivity {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				// TODO Auto-generated method stub
-				currentTab=m_tabHost.getCurrentTab();
+				currentTab = m_tabHost.getCurrentTab();
 				switch (checkedId) {
 				case R.id.RadioButton0:
 					setCurrentTabWithAnim(currentTab, 0,
-							ConValue.mTextviewArray[0]);
+							mTextviewArray[0]);
 
 					break;
 				case R.id.RadioButton1:
 					setCurrentTabWithAnim(currentTab, 1,
-							ConValue.mTextviewArray[1]);
+							mTextviewArray[1]);
 					break;
 				case R.id.RadioButton2:
 					setCurrentTabWithAnim(currentTab, 2,
-							ConValue.mTextviewArray[2]);
+							mTextviewArray[2]);
 					break;
 				case R.id.RadioButton3:
 					setCurrentTabWithAnim(currentTab, 3,
-							ConValue.mTextviewArray[3]);
+							mTextviewArray[3]);
 					break;
 				case R.id.RadioButton4:
 					setCurrentTabWithAnim(currentTab, 4,
-							ConValue.mTextviewArray[4]);
+							mTextviewArray[4]);
 					break;
 				case R.id.RadioButton5:
 					setCurrentTabWithAnim(currentTab, 5,
-							ConValue.mTextviewArray[5]);
+							mTextviewArray[5]);
 					break;
 				}
 			}
@@ -214,8 +279,9 @@ public class TabDetailActivity extends TabActivity {
 
 	private Intent getTabItemIntent(int index) {
 		int id = getIntent().getIntExtra("id", -1);
-		Intent intent = new Intent(this, ConValue.mTabClassArray[index]);
+		Intent intent = new Intent(this, mTabClassArray[index]);
 		intent.putExtra("id", id);
+		intent.putExtra("ismySelf", ismySelf);
 		Log.i("TabDetailActivity", "Intent");
 		return intent;
 	}

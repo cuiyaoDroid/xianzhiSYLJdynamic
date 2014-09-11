@@ -116,7 +116,7 @@
                 android:button="@null"
                 android:paddingBottom="3dp"
                 android:paddingTop="2dp"
-                android:text="安全检查"
+                android:text="提交报告"
                 android:visibility="gone" />
 
             <LinearLayout

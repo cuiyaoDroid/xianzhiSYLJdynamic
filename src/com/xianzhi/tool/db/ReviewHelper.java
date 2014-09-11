@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class ReviewHelper extends DBHelper {
-	private final static String TABLE_NAME = "review_order";
+	private final static String TABLE_NAME = "Dynamic_list_order";
 	public final static String ID = "_id";
 	public final static String board_train_code = "board_train_code";
 	public final static String start_time = "start_time";
@@ -26,7 +26,8 @@ public class ReviewHelper extends DBHelper {
 	public final static String position_id = "position_id";
 	public final static String position_name = "position_name";
 	public final static String team_length = "team_length";
-
+	public final static String isFinal = "isFinal";
+	public final static String isRead = "isRead";
 	public ReviewHelper(Context context) {
 		super(context);
 	}
@@ -47,15 +48,20 @@ public class ReviewHelper extends DBHelper {
 				+ " integer, " + job_number + " VARCHAR, " + user_name
 				+ " VARCHAR, " + photo + " VARCHAR, " + phone + " VARCHAR, "
 				+ department_id + " integer, " + department_name + " VARCHAR, "
-				+ position_id + " integer, " + position_name + " VARCHAR, "
+				+ position_id + " integer, " 
+				+ position_name + " VARCHAR, "
+				+ isFinal + " integer, "
+				+ isRead + " integer, "
 				+ team_length + " VARCHAR" + ");";
 		return sql;
 	}
 
 	public long insert(DynamicListHolder content, SQLiteDatabase db) {
 		ContentValues cv = new ContentValues();
+		int read=0;
 		if (content.getId() != -1) {
 			cv.put(ID, content.getId());
+			read=getRead(content.getId());
 		}
 		cv.put(board_train_code, content.getBoard_train_code());
 		cv.put(start_time, content.getStart_time());
@@ -72,6 +78,8 @@ public class ReviewHelper extends DBHelper {
 		cv.put(department_name, content.getDepartment_name());
 		cv.put(position_id, content.getPosition_id());
 		cv.put(position_name, content.getPosition_name());
+		cv.put(isFinal, content.getIsFinal());
+		cv.put(isRead, read);
 		return db.replace(TABLE_NAME, null, cv);
 	}
 
@@ -92,6 +100,8 @@ public class ReviewHelper extends DBHelper {
 		int department_name_column = cursor.getColumnIndex(department_name);
 		int position_id_column = cursor.getColumnIndex(position_id);
 		int position_name_column = cursor.getColumnIndex(position_name);
+		int isFinal_column = cursor.getColumnIndex(isFinal);
+		int isRead_column = cursor.getColumnIndex(isRead);
 
 		int id = cursor.getInt(id_column);
 		String board_train_code = cursor.getString(board_train_code_column);
@@ -109,11 +119,13 @@ public class ReviewHelper extends DBHelper {
 		String department_name = cursor.getString(department_name_column);
 		int position_id = cursor.getInt(position_id_column);
 		String position_name = cursor.getString(position_name_column);
+		int isFinal = cursor.getInt(isFinal_column);
+		int isRead = cursor.getInt(isRead_column);
 		DynamicListHolder holder = new DynamicListHolder(id, board_train_code,
 				start_time, from_station_name, to_station_name, current_team,
 				driving_status, user_id, job_number, user_name, photo, phone,
 				department_id, department_name, position_id, position_name,
-				position_name);
+				position_name,isFinal,isRead);
 		return holder;
 	}
 
@@ -129,7 +141,26 @@ public class ReviewHelper extends DBHelper {
 		cursor.close();
 		return holderlist;
 	}
-
+	public int getRead(int id) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_NAME, null, ID+"="+id, null, null, null,null);
+		if (!cursor.moveToFirst()) {
+			cursor.close();
+			return 0;
+		}
+		int isRead_column = cursor.getColumnIndex(isRead);
+		int isRead = cursor.getInt(isRead_column);
+		cursor.close();
+		return isRead;
+	}
+	public int setRead(int id) {
+		synchronized (lock.Lock) {
+			SQLiteDatabase db = getWritableDatabase();
+			ContentValues cv = new ContentValues();
+			cv.put(isRead, 1);
+			return db.update(TABLE_NAME,cv,null, null);
+		}
+	}
 	public ArrayList<DynamicListHolder> selectSearchData(String train_Code,int from, int pagesize) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, null, board_train_code + " like '%"

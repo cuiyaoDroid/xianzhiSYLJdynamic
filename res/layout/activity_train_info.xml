@@ -52,6 +52,7 @@
                 android:numColumns="auto_fit"
                 android:scrollbars="none"
                 android:stretchMode="columnWidth"
+                android:visibility="gone"
                 android:verticalSpacing="10dp" />
 
             <com.xianzhi.tool.view.MyGridView
@@ -67,6 +68,7 @@
                 android:horizontalSpacing="10dp"
                 android:numColumns="auto_fit"
                 android:scrollbars="none"
+                android:visibility="gone"
                 android:background="@drawable/radiu_group_bg"
                 android:stretchMode="columnWidth"
                 android:verticalSpacing="10dp" />

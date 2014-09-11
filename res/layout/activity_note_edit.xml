@@ -27,6 +27,7 @@
             android:layout_weight="1"
             android:background="@drawable/radiu_tableview_bg"
             android:ems="10"
+            android:inputType="numberDecimal"
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
             android:singleLine="true"
@@ -50,6 +51,7 @@
             android:ems="10"
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
+            android:inputType="numberDecimal"
             android:singleLine="true"
             android:textSize="12sp" >
         </EditText>
@@ -72,6 +74,7 @@
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
             android:singleLine="true"
+            android:inputType="numberDecimal"
             android:textSize="12sp" >
         </EditText>
     </LinearLayout>
@@ -101,6 +104,7 @@
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
             android:singleLine="true"
+            android:inputType="numberDecimal"
             android:textSize="12sp" >
         </EditText>
 
@@ -122,6 +126,7 @@
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
             android:singleLine="true"
+            android:inputType="numberDecimal"
             android:textSize="12sp" >
         </EditText>
 
@@ -143,6 +148,7 @@
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
             android:singleLine="true"
+            android:inputType="numberDecimal"
             android:textSize="12sp" >
         </EditText>
     </LinearLayout>
@@ -172,6 +178,7 @@
             android:imeOptions="flagNoExtractUi"
             android:padding="6dp"
             android:singleLine="true"
+            android:inputType="numberDecimal"
             android:textSize="12sp" >
         </EditText>
 
