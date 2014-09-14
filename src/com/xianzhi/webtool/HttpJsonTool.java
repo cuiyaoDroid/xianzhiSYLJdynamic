@@ -68,9 +68,9 @@ public class HttpJsonTool {
 		correct, webfaild, wronginput, correctnoname
 	};
 
-//	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
+	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
 	// public static final String ServerUrl = "http://192.168.1.107:8080";
-	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic/";
+//	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic/";
 	// "https://eaccess.syrailway.cn:8443/mapping/sjznbg";
 	private static HttpJsonTool httpjsontool = null;
 	public static String username = "";
@@ -383,6 +383,9 @@ public class HttpJsonTool {
 				String to_station_name = json.optString("to_station_name");
 				String current_team = json.optString("current_team");
 				int driving_status = json.optInt("driving_status");
+				if(json.optString("driving_status").equals("null")){
+					driving_status=4;
+				}
 				int user_id = json.optInt("user_id");
 				String job_number = json.optString("job_number");
 				String user_name = json.optString("user_name");
@@ -418,12 +421,15 @@ public class HttpJsonTool {
 		String to_station_name = json.optString("to_station_name");
 		String current_team = json.optString("current_team");
 		int driving_status = json.optInt("driving_status");
+		if(json.optString("driving_status").equals("null")){
+			driving_status=4;
+		}
 		int user_id = json.optInt("user_id");
 		String job_number = json.optString("job_number");
 		String user_name = json.optString("user_name");
 		String photo = json.optString("photo");
 		String phone = json.optString("phone");
-		int department_id = json.optInt("department_id");
+		int department_id = json.optInt("department_id"); 
 		String department_name = json.optString("department_name");
 		int position_id = json.optInt("position_id");
 		String position_name = json.optString("position_name");

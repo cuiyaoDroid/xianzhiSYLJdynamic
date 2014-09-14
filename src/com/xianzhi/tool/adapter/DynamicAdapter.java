@@ -46,10 +46,14 @@ public class DynamicAdapter extends SimpleAdapter {
 			int color = context.getResources().getColor(R.color.Red); 
 			state_txt.setTextColor(color);
 			state_txt.setText("到达");
-		}else{
+		}else if(state==0){
 			int color = context.getResources().getColor(R.color.txt_blue); 
 			state_txt.setTextColor(color);
 			state_txt.setText("晚点");
+		}else{
+			int color = context.getResources().getColor(R.color.txt_green); 
+			state_txt.setTextColor(color);
+			state_txt.setText("正常");
 		}
 		return result;
 	}
