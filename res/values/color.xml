@@ -7,6 +7,7 @@
     <color name="lucensy">#00000001</color>
     <color name="translucency">#e0000000</color>
     <color name="black">#000000</color>
+    <color name="seat_text">#6E9FDF</color>
     <!-- <color name="red">#bf242a</color> -->
     <color name="transparent">#00000000</color>
     <color name="light_orange">#fcb75c</color>

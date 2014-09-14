@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
+import com.xianzhi.stool.L;
 import com.xianzhi.tool.adapter.GridListAdapter;
 import com.xianzhi.tool.db.DynamicHelper;
 import com.xianzhi.tool.db.DynamicHolder;
@@ -127,6 +128,7 @@ public class TrainInfoActivity extends Activity {
 	}
 
 	private void callTellNum(String num) {
+		L.i("tel:"+num);
 		Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + num));
 		startActivity(intent);
 	}

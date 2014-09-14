@@ -1,6 +1,8 @@
 package com.xianzhisylj.dynamic;
 
+import com.xianzhi.service.dynamicService;
 import com.xianzhi.stool.T;
+import com.xianzhi.tool.db.DynamicListHelper;
 import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhi.webtool.HttpStringMD5;
 
@@ -22,6 +24,7 @@ public class LoginActivity extends Activity{
 	private ImageButton login_btn;
 	private EditText usr_edit;
 	private EditText pass_edit;
+	private String preloginName;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -32,10 +35,10 @@ public class LoginActivity extends Activity{
 		usr_edit=(EditText)findViewById(R.id.usr_edit);
 		pass_edit=(EditText)findViewById(R.id.pass_edit);
 		SharedPreferences userInfo = getSharedPreferences("user_info", 0);
-		String loginName = userInfo.getString("loginName", "");
+		preloginName = userInfo.getString("loginName", "");
 		String password = userInfo.getString("password", "");
 		int savepassword = userInfo.getInt("savepassword", 0);
-		usr_edit.setText(loginName);
+		usr_edit.setText(preloginName);
 		pass_edit.setText(password);
 		save_check.setChecked(savepassword==1?true:false);
 		initProgressDialog();
@@ -45,6 +48,11 @@ public class LoginActivity extends Activity{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String loginName=usr_edit.getText().toString();
+				if(!preloginName.equals(loginName)){
+					DynamicListHelper helper=new DynamicListHelper(getApplicationContext());
+					helper.clear();
+					helper.close();
+				}
 				String password=pass_edit.getText().toString();
 				startLogin(loginName,password);
 			}

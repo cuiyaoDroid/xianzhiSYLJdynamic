@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 
+import com.xianzhi.service.dynamicService;
 import com.xianzhi.tool.db.DBHelper;
+import com.xianzhi.webtool.HttpsClient;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
 
 public class InitActivity extends Activity {
@@ -53,6 +55,8 @@ public class InitActivity extends Activity {
 //		SecurityCheckApp.loginName = bundle.getString("loginName");
 //		SecurityCheckApp.userId = bundle.getInt("userId");
 //		putVersion(getString(R.string.version));
+		HttpsClient.getInstance().init(getApplicationContext());
+		startService(new Intent(InitActivity.this, dynamicService.class));
 		Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
 		startActivityForResult(intent, RESULT_OK);
 		finish();

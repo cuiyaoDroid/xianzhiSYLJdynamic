@@ -56,7 +56,7 @@ public class NoteInfoActivity extends Activity {
 					gotoLoginView();
 					return;
 				}else if(result.startsWith(HttpJsonTool.ERROR)){
-					T.showLong(getApplicationContext(), result.replace(HttpJsonTool.ERROR, ""));
+//					T.showLong(getApplicationContext(), result.replace(HttpJsonTool.ERROR, ""));
 					return;
 				}else if(result.startsWith(HttpJsonTool.SUCCESS)){
 					RefreshGroupData();

@@ -2,29 +2,34 @@ package com.xianzhisylj.dynamic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 import android.widget.PopupWindow.OnDismissListener;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xianzhi.stool.DensityUtil;
 import com.xianzhi.stool.T;
+import com.xianzhi.tool.adapter.GridBedAdapter;
 import com.xianzhi.tool.adapter.GridSeatListAdapter;
-import com.xianzhi.tool.db.PassengerHelper;
-import com.xianzhi.tool.db.PassengerHolder;
+import com.xianzhi.tool.db.SeatInfoHelper;
+import com.xianzhi.tool.db.SeatInfoHolder;
 import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
 
@@ -32,49 +37,84 @@ public class CompartmentActivity extends Activity {
 	private GridView gridview_1;
 	private GridView gridview_2;
 	private ArrayList<HashMap<String, Object>> grid1_Data;
-	private GridSeatListAdapter grid1_Adapter;
+	private SimpleAdapter grid1_Adapter;
 	private ArrayList<HashMap<String, Object>> grid2_Data;
 	private GridSeatListAdapter grid2_Adapter;
-	private String[] letters = new String[] { "A", "B", "C", "D", "E" };
-
+	private String[] letters = new String[] { "A", "B", "C", "D", "F" };
+	private String[] letters2 = new String[] { "A", "C", "D", "F" };
 	private TextView titleTxt;
-	private int id;
-	private int dynamic_id;
 	private String coach_no;
 	private String trainCode;
 	private String trainDate;
-
+	private String train_type;
+	private ProgressDialog progreeDialog;
+	private void initProgressDialog() {
+		progreeDialog = new ProgressDialog(this);
+		progreeDialog.setTitle("");
+		progreeDialog.setMessage("正在获得票务信息，请稍等...");
+		progreeDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_compartments);
-
+		hashSet=new HashSet<String>();
 		Intent intent = getIntent();
 		coach_no = intent.getStringExtra("coach_no");
 		trainCode = intent.getStringExtra("trainCode");
 		trainDate = intent.getStringExtra("trainDate");
-
+		train_type = intent.getStringExtra("train_type");
+		initProgressDialog();
+		initCount();
 		grid1_Data = new ArrayList<HashMap<String, Object>>();
 		grid2_Data = new ArrayList<HashMap<String, Object>>();
-//		initContentView();
+		initContentView();
 		getSeatData();
 	}
+	private void initCount(){
+		if(train_type.equals("YW")){
+			seat_topX=3;
+		}else if(train_type.equals("RW")){
+			seat_topX=2;
+		}else{
+			seat_topX=2;
+		}
+		
+		if(train_type.equals("RZ2")){
+			seat_bottomX=3;
+		}else if(train_type.equals("RZ1")){
+			seat_bottomX=2;
+		}else{
+			seat_bottomX=3;
+		}
+		seat_x=seat_topX+seat_bottomX;
+		if(train_type.equals("RZ")||train_type.equals("YZ")){
+			seat_y=120/5;
+		}else if(train_type.equals("YW")){
+			seat_y=22;
+		}else{
+			seat_y=19;
+		}
+	}
+	private Set<String>hashSet;
 	private void getSeatData(){
-//		progressBar.setVisibility(View.VISIBLE);
+		progreeDialog.show();
+		hashSet.clear();
+		
 		AsyncTask<Void, Void, String> task =new AsyncTask<Void, Void, String>() {
 
 			@Override
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
 				return HttpJsonTool.getInstance().getSeatInfo(getApplicationContext()
-						, trainCode, trainDate, coach_no);
+						, trainCode, trainDate, coach_no,hashSet);
 			}
 			@Override
 			protected void onPostExecute(String result) {
 				// TODO Auto-generated method stub
 				super.onPostExecute(result);
-//				progressBar.setVisibility(View.GONE);
+				progreeDialog.dismiss();
 				if(result.startsWith(HttpJsonTool.ERROR403)){
 					gotoLoginView();
 					return;
@@ -83,6 +123,8 @@ public class CompartmentActivity extends Activity {
 					return;
 				}else if(result.startsWith(HttpJsonTool.SUCCESS)){
 //					RefreshGroupData();
+					refreshCellToGrid_1();
+					refreshCellToGrid_2();
 					return;
 				}
 			}
@@ -100,13 +142,16 @@ public class CompartmentActivity extends Activity {
 	}
 	private void initContentView() {
 		gridview_1 = (GridView) findViewById(R.id.gridview_1);
+		gridview_1.setNumColumns(seat_y);
+		int itemWidth = DensityUtil.dip2px(getApplicationContext(), 55)*seat_y;  
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(  
+        		itemWidth, LinearLayout.LayoutParams.WRAP_CONTENT);  
+        gridview_1.setLayoutParams(params);  
 		gridview_2 = (GridView) findViewById(R.id.gridview_2);
+		gridview_2.setNumColumns(seat_y);
+		gridview_2.setLayoutParams(params); 
 		titleTxt = (TextView) findViewById(R.id.title_txt);
-		Intent intent = getIntent();
-		id = intent.getIntExtra("id", -1);
-		dynamic_id = intent.getIntExtra("dynamic_id", -1);
-		titleTxt.setText(intent.getStringExtra("name") + "车厢\u3000乘务员 "
-				+ intent.getStringExtra("em_names").replaceAll(",", " "));
+		titleTxt.setText("编组："+coach_no);
 		initGridView();
 	}
 
@@ -144,9 +189,15 @@ public class CompartmentActivity extends Activity {
 	}
 
 	private void initGridView() {
-		grid1_Adapter = new GridSeatListAdapter(this, grid1_Data,
-				R.layout.cell_compartment, new String[] { "letter" },
-				new int[] { R.id.seat_num });
+		if(train_type.equals("RW")||train_type.equals("YW")){
+			grid1_Adapter = new GridBedAdapter(this, grid1_Data,
+					R.layout.cell_compartment, new String[] { "letter" },
+					new int[] { R.id.seat_num });
+		}else{
+			grid1_Adapter = new GridSeatListAdapter(this, grid1_Data,
+					R.layout.cell_compartment, new String[] { "letter" },
+					new int[] { R.id.seat_num });
+		}
 		gridview_1.setAdapter(grid1_Adapter);
 		gridview_1.setOnItemClickListener(new OnItemClickListener() {
 
@@ -155,8 +206,9 @@ public class CompartmentActivity extends Activity {
 					int position, long arg3) {
 				// TODO Auto-generated method stub
 				HashMap<String, Object> map = grid1_Data.get(position);
+				String letter=(String) map.get("letter");
 				if ((Boolean) map.get("full")) {
-					initEditTypePopupWindow(arg1, map);
+					initEditTypePopupWindow(arg1, letter);
 				}
 			}
 		});
@@ -182,75 +234,47 @@ public class CompartmentActivity extends Activity {
 					int position, long arg3) {
 				// TODO Auto-generated method stub
 				HashMap<String, Object> map = grid2_Data.get(position);
+				String letter=(String) map.get("letter");
 				if ((Boolean) map.get("full")) {
-					initEditTypePopupWindow(arg1, map);
+					initEditTypePopupWindow(arg1, letter);
 				}
 			}
 		});
 		gridview_2.setOnTouchListener(listener);
 	}
-
-	String[][] seat = new String[5][12];
+	private int seat_topX=2;
+	private int seat_bottomX=3;
+	private int seat_x=seat_topX+seat_bottomX;
+	private int seat_y=19;
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if (id == -1 || dynamic_id == -1) {
-			return;
-		}
 //		refreshDBData();
-//		refreshCellToGrid_1();
-//		refreshCellToGrid_2();
+		refreshCellToGrid_1();
+		refreshCellToGrid_2();
 	}
 
-	private void refreshDBData() {
-		PassengerHelper helper = new PassengerHelper(getApplicationContext());
-		ArrayList<PassengerHolder> holders = helper.selectDataGroup(dynamic_id,
-				id);
-		for (PassengerHolder holder : holders) {
-			String[] seats = holder.getSeat().split(",");
-			if (seats.length < 2) {
-				continue;
-			}
-			if (Integer.parseInt(seats[0]) > 4
-					|| Integer.parseInt(seats[1]) > 11) {
-				continue;
-			}
-			seat[Integer.parseInt(seats[0])][Integer.parseInt(seats[1])] = holder
-					.getName()
-					+ ","
-					+ holder.getPersonal_code()
-					+ ","
-					+ holder.getStart_station()
-					+ ","
-					+ holder.getArrive_station() + "," + holder.getTick_price();
-		}
-		helper.close();
-	}
 
 	private void refreshCellToGrid_1() {
 		grid1_Data.clear();
-		for (int i = 0; i < 36; i++) {
+		for (int i = 0; i < seat_y*seat_topX; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("letter",
-					String.format("%02d" + letters[(4 - i / 12)], (i % 12 + 1)));
-			String str_seat = seat[4 - i / 12][i % 12];
-			if (str_seat != null) {
-				String[] arr_seat = str_seat.split(",");
-				map.put("full", true);
-				if (arr_seat.length < 5) {
-					map.put("full", false);
-					continue;
-				}
-				map.put("name", arr_seat[0]);
-				map.put("personal_code", arr_seat[1]);
-				map.put("start_station", arr_seat[2]);
-				map.put("arrive_station", arr_seat[3]);
-				map.put("tick_price", arr_seat[4]);
-			} else {
-				map.put("full", false);
+			String letter="";
+			if(train_type.equals("RZ")||train_type.equals("YZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1));
+			}else if(train_type.equals("RZ2")){
+				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
+			}else if(train_type.equals("RZ1")){
+				letter=String.format("%03d" + letters2[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
+			}else if(train_type.equals("YW")||train_type.equals("RW")){
+				letter=String.format("%04d", (i % seat_y)*seat_topX+(i/seat_y+1));
+			}else {
+				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
 			}
+			map.put("letter",letter);
+			map.put("full", hashSet.contains(letter));
 			grid1_Data.add(map);
 		}
 		grid1_Adapter.notifyDataSetChanged();
@@ -258,27 +282,24 @@ public class CompartmentActivity extends Activity {
 
 	private void refreshCellToGrid_2() {
 		grid2_Data.clear();
-		for (int i = 0; i < 24; i++) {
+		if(train_type.equals("YW")||train_type.equals("RW")){
+			return;
+		}
+		for (int i = 0; i < seat_y*seat_bottomX; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("letter",
-					String.format("%02d" + letters[(1 - i / 12)], (i % 12 + 1)));
-			String str_seat = seat[1 - i / 12][i % 12];
-			if (str_seat != null) {
-				String[] arr_seat = str_seat.split(",");
-				map.put("full", true);
-				if (arr_seat.length < 5) {
-					map.put("full", false);
-					continue;
-				}
-				map.put("name", arr_seat[0]);
-				map.put("personal_code", arr_seat[1]);
-				map.put("start_station", arr_seat[2]);
-				map.put("arrive_station", arr_seat[3]);
-				map.put("tick_price", arr_seat[4]);
-			} else {
-				map.put("full", false);
+			String letter="";
+			if(train_type.equals("RZ")||train_type.equals("YZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1));
+			}else if(train_type.equals("RZ2")){
+				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
+			}else if(train_type.equals("RZ1")){
+				letter=String.format("%03d" + letters2[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
+			}else {
+				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
 			}
-
+			
+			map.put("letter",letter);
+			map.put("full", hashSet.contains(letter));
 			grid2_Data.add(map);
 		}
 		grid2_Adapter.notifyDataSetChanged();
@@ -287,28 +308,20 @@ public class CompartmentActivity extends Activity {
 	private PopupWindow EditTypePop = null;
 
 	private void initEditTypePopupWindow(View view,
-			HashMap<String, Object> hashMap) {
+			String letter) {
 		View popunwindwow = getLayoutInflater().inflate(
 				R.layout.popup_passenger_info, null);
-		TextView name_txt = (TextView) popunwindwow.findViewById(R.id.name_txt);
-		TextView personal_code_txt = (TextView) popunwindwow
-				.findViewById(R.id.personal_code_txt);
-		TextView start_station_txt = (TextView) popunwindwow
-				.findViewById(R.id.start_station_txt);
-		TextView arrive_station_txt = (TextView) popunwindwow
-				.findViewById(R.id.arrive_station_txt);
-		TextView tick_price_txt = (TextView) popunwindwow
-				.findViewById(R.id.tick_price_txt);
-		name_txt.setText("姓名: " + (String) hashMap.get("name"));
-		Log.i("personal_code", (String) hashMap.get("personal_code"));
-		personal_code_txt.setText("身份证: "
-				+ (String) hashMap.get("personal_code"));
-		start_station_txt.setText("始发站: "
-				+ (String) hashMap.get("start_station"));
-		arrive_station_txt.setText("终点站: "
-				+ (String) hashMap.get("arrive_station"));
-		tick_price_txt.setText("票价: " + (String) hashMap.get("tick_price"));
-
+		SeatInfoHelper helper=new SeatInfoHelper(getApplicationContext());
+		ArrayList<SeatInfoHolder>holders=helper.selectData_trainCode(trainCode, trainDate, coach_no, letter);
+		helper.close();
+		String content="";
+		int i=0;
+		for(SeatInfoHolder holder:holders){
+			content+=holder.toString()+((i==holders.size()-1)?"":"\r\n");
+			i++;
+		}
+		TextView content_txt = (TextView) popunwindwow.findViewById(R.id.content_txt);
+		content_txt.setText(content);
 		EditTypePop = new PopupWindow(popunwindwow, DensityUtil.dip2px(
 				getApplicationContext(), 200), DensityUtil.dip2px(
 				getApplicationContext(), 100));

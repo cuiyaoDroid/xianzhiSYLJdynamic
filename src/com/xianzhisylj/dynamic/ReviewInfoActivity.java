@@ -1,6 +1,8 @@
 package com.xianzhisylj.dynamic;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
@@ -17,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.xianzhi.stool.T;
+import com.xianzhi.tool.adapter.ReviewListAdapter;
+import com.xianzhi.tool.db.ReviewHelper;
 import com.xianzhi.tool.db.ReviewHolder;
 import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
@@ -25,6 +29,7 @@ public class ReviewInfoActivity extends Activity{
 	private ProgressBar progressBar;
 	private ListView review_listView;
 	private ArrayList<Map<String,Object>>listdata;
+	private ReviewListAdapter adapter;
 	private int train_id;
 	private Button commit_btn;
 	private EditText review_input_edit;
@@ -39,7 +44,7 @@ public class ReviewInfoActivity extends Activity{
 			return;
 		}
 		initContentView();
-		getImportInfo();
+		getReviewInfo();
 	}
 	@SuppressLint("SimpleDateFormat")
 	private void initContentView(){
@@ -57,7 +62,13 @@ public class ReviewInfoActivity extends Activity{
 			}
 		});
 		boolean ismySelf=getIntent().getBooleanExtra("ismySelf",false);
-		findViewById(R.id.review_layout).setVisibility(ismySelf?View.GONE:View.VISIBLE);
+		findViewById(R.id.review_layout).setVisibility(
+				(!ismySelf)&&HttpJsonTool.reviewTrain==1?View.VISIBLE:View.GONE);
+		
+		adapter=new ReviewListAdapter(getApplicationContext(),listdata 
+				, R.layout.cell_review_list, new String[]{}, new int[]{});
+		review_listView.setAdapter(adapter);
+		
 		
 //		approval_txt = (TextView)findViewById(R.id.approval_txt);
 //		submit_txt = (TextView)findViewById(R.id.submit_txt);
@@ -69,9 +80,9 @@ public class ReviewInfoActivity extends Activity{
 //				+ holder.getSubmit_name() + "</font>"+"\u3000提交本次乘务报告的最终版本。";
 //		submit_txt.setText(Html.fromHtml(str_submit));
 	}
-	private void getImportInfo(){
+	private void getReviewInfo(){
 		progressBar.setVisibility(View.VISIBLE);
-		review_listView.setVisibility(View.GONE);
+		review_listView.setVisibility(View.INVISIBLE);
 		AsyncTask<Void, Void, String> task =new AsyncTask<Void, Void, String>() {
 
 			@Override
@@ -100,11 +111,13 @@ public class ReviewInfoActivity extends Activity{
 		task.execute();
 	}
 	private void commit() {
+		
 		final String message=review_input_edit.getText().toString();
 		if(message.trim().length()==0){
 			T.showLong(getApplicationContext(), "请输入审阅意见");
 			return;
 		}
+		commit_btn.setEnabled(false);
 		progressBar.setVisibility(View.VISIBLE);
 		AsyncTask<Void, Void, String> task =new AsyncTask<Void, Void, String>() {
 
@@ -112,8 +125,8 @@ public class ReviewInfoActivity extends Activity{
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
 				
-				ReviewHolder holder=new ReviewHolder(-1, train_id
-						, HttpJsonTool.userId, "", "", ""
+				ReviewHolder holder=new ReviewHolder(-1, train_id, HttpJsonTool.userId
+						, "", "", "", ""
 						, message, 1, 2, -1);
 				return HttpJsonTool.getInstance().saveReview(getApplicationContext(), holder);
 			}
@@ -121,6 +134,7 @@ public class ReviewInfoActivity extends Activity{
 			protected void onPostExecute(String result) {
 				// TODO Auto-generated method stub
 				super.onPostExecute(result);
+				commit_btn.setEnabled(true);
 				progressBar.setVisibility(View.GONE);
 				if(result==null){
 					return;
@@ -132,7 +146,8 @@ public class ReviewInfoActivity extends Activity{
 					T.show(getApplicationContext(), result.replace(HttpJsonTool.ERROR, ""), Toast.LENGTH_LONG);
 				}else if(result.startsWith(HttpJsonTool.SUCCESS)){
 					T.show(getApplicationContext(), "提交成功", Toast.LENGTH_LONG);
-					finish();
+					getReviewInfo();
+					review_input_edit.setText("");
 				}
 			}
 		};
@@ -147,8 +162,23 @@ public class ReviewInfoActivity extends Activity{
 		} catch (Exception e) {
 		}
 	}
+	@SuppressLint("SimpleDateFormat") 
 	private void RefreshData(){
 		listdata.clear();
-		
+		ReviewHelper helper=new ReviewHelper(getApplicationContext());
+		ArrayList<ReviewHolder>holders=helper.selectData(train_id);
+		helper.close();
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		for(ReviewHolder holder:holders){
+			Map<String,Object>data=new HashMap<String, Object>();
+			data.put(ReviewHelper.CREATE_TIME, format.format(holder.getCreate_time()));
+			data.put(ReviewHelper.ID, holder.getId());
+			data.put(ReviewHelper.ROLE_NAMES,holder.getRole_names());
+			data.put(ReviewHelper.USER_NAME, holder.getUser_name());
+			data.put(ReviewHelper.MSG_TYPE, holder.getMsg_type());
+			data.put(ReviewHelper.MESSAGE, holder.getMessage());
+			listdata.add(data);
+		}
+		adapter.notifyDataSetChanged();
 	}
 }

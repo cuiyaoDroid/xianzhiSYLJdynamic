@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.xianzhisylj.dynamic.R;
 
-public class GridSeatListAdapter extends SimpleAdapter {
+public class GridBedAdapter extends SimpleAdapter {
 	// 用于动态的载入一个界面文件
 	private List<Map<String, Object>> styles = null;
 
@@ -33,7 +33,7 @@ public class GridSeatListAdapter extends SimpleAdapter {
 		boolean full=(Boolean) styles.get(position).get("full");
 		ImageView img=(ImageView)result.findViewById(R.id.seat_img);
 		TextView set_txt=(TextView)result.findViewById(R.id.seat_num);
-		img.setImageResource(full?R.drawable.img_seat_full:R.drawable.img_seat_empty);
+		img.setImageResource(full?R.drawable.img_bed_sold:R.drawable.img_bed);
 //		set_txt.setVisibility(full?View.VISIBLE:View.VISIBLE);
 		set_txt.setTextColor(full?context.getResources().getColor(android.R.color.black)
 				:context.getResources().getColor(R.color.seat_text));
@@ -53,7 +53,7 @@ public class GridSeatListAdapter extends SimpleAdapter {
 	private Context context;
 
 	@SuppressWarnings("unchecked")
-	public GridSeatListAdapter(Context context,
+	public GridBedAdapter(Context context,
 			List<? extends Map<String, ?>> data, int resource, String[] from,
 			int[] to) {
 		super(context, data, resource, from, to);

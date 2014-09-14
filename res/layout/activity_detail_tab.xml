@@ -35,6 +35,15 @@
                 android:orientation="horizontal"
                 android:gravity="bottom"
                 android:paddingBottom="3dp" >
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp" 
+                    android:layout_marginLeft="10dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center_vertical"/>
+                
             </LinearLayout>
         </HorizontalScrollView>
 

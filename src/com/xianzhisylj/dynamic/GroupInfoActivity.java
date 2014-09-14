@@ -59,6 +59,7 @@ public class GroupInfoActivity extends Activity{
 				intent.putExtra("coach_no", (String)groupData.get(arg2).get("coach_no"));
 				intent.putExtra("trainCode", (String)groupData.get(arg2).get("trainCode"));
 				intent.putExtra("trainDate", (String)groupData.get(arg2).get("trainDate"));
+				intent.putExtra("train_type", (String)groupData.get(arg2).get("train_type"));
 				startActivity(intent);
 			}
 		});

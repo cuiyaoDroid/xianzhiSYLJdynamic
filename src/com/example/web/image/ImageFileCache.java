@@ -69,7 +69,12 @@ public class ImageFileCache {
         File file = new File(path);
         if (file.exists()) {
             Bitmap bmp;
-			bmp = PictureUtil.getSmallBitmap(path);
+            try {
+            	bmp = PictureUtil.getSmallBitmap(path);
+			} catch (OutOfMemoryError e) {
+				// TODO: handle exception
+				bmp = PictureUtil.getimage(path, 480, 800, 1024*1024 * 2);
+			}
 			if (bmp == null) {
 			    file.delete();
 			} else {

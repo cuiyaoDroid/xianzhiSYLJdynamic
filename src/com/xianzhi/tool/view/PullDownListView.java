@@ -1,9 +1,6 @@
 package com.xianzhi.tool.view;
 
 
-
-
-
 import com.xianzhisylj.dynamic.R;
 
 import android.content.Context;
@@ -28,7 +25,6 @@ import android.widget.ProgressBar;
 import android.widget.Scroller;
 import android.widget.TextView;
 
-
 public class PullDownListView extends FrameLayout implements
 		GestureDetector.OnGestureListener {
 	public static int MAX_LENGHT = 0;
@@ -36,7 +32,7 @@ public class PullDownListView extends FrameLayout implements
 	public static final int SCROLL_TO_CLOSE = 2;
 	public static final int SCROLL_TO_REFRESH = 3;
 	public static final double SCALE = 0.5d;
-	private static final int CLOSEDELAY = 300;
+	private static final int CLOSEDELAY = 800;
 	private static final int REFRESHDELAY = 300;
 	private Animation mAnimationDown;
 	private Animation mAnimationUp;
@@ -199,12 +195,12 @@ public class PullDownListView extends FrameLayout implements
 		mAnimationUp = AnimationUtils.loadAnimation(getContext(),
 				R.anim.rotate_up);
 		mAnimationUp.setFillAfter(true);
-//		mAnimationUp.setAnimationListener(this);
+		// mAnimationUp.setAnimationListener(this);
 		// 向下滑动的动画
 		mAnimationDown = AnimationUtils.loadAnimation(getContext(),
 				R.anim.rotate_down);
 		mAnimationDown.setFillAfter(true);
-//		mAnimationDown.setAnimationListener(this);
+		// mAnimationDown.setAnimationListener(this);
 		// 刷新头部的view
 		view = LayoutInflater.from(getContext()).inflate(R.layout.refresh_bar,
 				null);
@@ -539,11 +535,11 @@ public class PullDownListView extends FrameLayout implements
 		handled = mDetector.onTouchEvent(e);
 		switch (action) {
 		case MotionEvent.ACTION_UP:
-//			boolean f1 = mListView.getTop() <= e.getY()
-//					&& e.getY() <= mListView.getBottom();//cuiyao edit it
-			if (!handled && mFirstChild.getTop() == -MAX_LENGHT 
+			// boolean f1 = mListView.getTop() <= e.getY()
+			// && e.getY() <= mListView.getBottom();//cuiyao edit it
+			if (!handled && mFirstChild.getTop() == -MAX_LENGHT
 					|| mState == STATE_REFRESH) {
-				
+
 				super.dispatchTouchEvent(e);
 			} else {
 				// 执行释放方法
@@ -565,7 +561,7 @@ public class PullDownListView extends FrameLayout implements
 			break;
 		case MotionEvent.ACTION_MOVE:
 			float deltaY = lastY - y;
-			
+
 			lastY = y;
 			if (!mPendingRemoved) {
 				removeCallbacks(mPendingCheckForLongPress);
@@ -625,9 +621,9 @@ public class PullDownListView extends FrameLayout implements
 			}
 		}
 		if (deltaY < 0F && flag || getChildAt(0).getTop() > -MAX_LENGHT) { // deltaY
-		// <
-		// 0
-		// 向下
+			// <
+			// 0
+			// 向下
 			handled = move(deltaY, false);
 		} else
 			handled = false;

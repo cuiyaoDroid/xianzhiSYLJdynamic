@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/compartment_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/compartment_layout" >
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/blue_line"
@@ -30,32 +30,49 @@
         android:textSize="12sp" >
     </TextView>
 
-    <com.xianzhi.tool.view.MyGridView
-        android:id="@+id/gridview_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/title_txt"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:stretchMode="columnWidth"
-        android:scrollbars="none"
-        android:gravity="center"
-        android:numColumns="12" >
+        android:scrollbars="none" >
 
-    </com.xianzhi.tool.view.MyGridView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_margin="5dp" >
 
-    <com.xianzhi.tool.view.MyGridView
-        android:id="@+id/gridview_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="5dp"
-        android:scrollbars="none"
-        android:gravity="center"
-        android:stretchMode="columnWidth"
-        android:numColumns="12" >
-
-    </com.xianzhi.tool.view.MyGridView>
+            <com.xianzhi.tool.view.MyGridView
+                android:id="@+id/gridview_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:columnWidth="55dp"
+                android:gravity="center"
+                android:scrollbars="none"
+                android:stretchMode="none" >
+            </com.xianzhi.tool.view.MyGridView>
+			<TextView 
+			    android:layout_width="wrap_content"
+			    android:layout_height="0dp"
+			    android:layout_weight="1"/>
+            <com.xianzhi.tool.view.MyGridView
+                android:id="@+id/gridview_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                 android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:columnWidth="55dp"
+                android:gravity="center"
+                android:scrollbars="none"
+                android:stretchMode="none">
+            </com.xianzhi.tool.view.MyGridView>
+        </LinearLayout>
+    </HorizontalScrollView>
 
 </RelativeLayout>

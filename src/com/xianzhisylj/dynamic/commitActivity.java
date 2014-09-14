@@ -72,8 +72,8 @@ public class commitActivity extends Activity implements OnClickListener {
 				if(repone.startsWith(HttpJsonTool.ERROR)){
 					return repone;
 				}
-				ReviewHolder holder=new ReviewHolder(-1, train_id
-						, HttpJsonTool.userId, "", "", ""
+				ReviewHolder holder=new ReviewHolder(-1, train_id, HttpJsonTool.userId
+						, "", "", "", ""
 						, "", 1, 3, -1);
 				return HttpJsonTool.getInstance().saveReview(getApplicationContext(), holder);
 			}

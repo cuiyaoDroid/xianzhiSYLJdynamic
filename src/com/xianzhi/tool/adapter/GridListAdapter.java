@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.web.image.ImageDownloader;
+import com.xianzhi.tool.web.img.ImageCache;
+import com.xianzhi.tool.web.img.ImageFetcher;
 import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhisylj.dynamic.R;
 
@@ -53,7 +55,7 @@ public class GridListAdapter extends SimpleAdapter {
 		// TODO Auto-generated method stub
 		View result = super.getView(position, convertView, parent);
 		ImageView head_img = (ImageView) result.findViewById(R.id.head_img);
-		downloader.download(HttpJsonTool.ServerUrl+(String)styles.get(position).get("img"), head_img);
+		mImageFetcher.loadImage(HttpJsonTool.ServerUrl+(String)styles.get(position).get("img"), head_img);
 		TextView name = (TextView) result.findViewById(R.id.name_txt);
 		name.setText(Html.fromHtml((String)styles.get(position).get("name")));
 		return result;
@@ -70,14 +72,17 @@ public class GridListAdapter extends SimpleAdapter {
 	}
 
 	private Context context;
-	private ImageDownloader downloader;
+	private ImageCache ImageCache;
+	private ImageFetcher mImageFetcher;
 	@SuppressWarnings("unchecked")
 	public GridListAdapter(Context context,
 			List<? extends Map<String, ?>> data, int resource, String[] from,
 			int[] to) {
 		super(context, data, resource, from, to);
 		this.context = context;
-		downloader=new ImageDownloader(context, 0);
+		ImageCache=new ImageCache(context, "xianzhi");
+		mImageFetcher =new ImageFetcher(context, 240);
+		mImageFetcher.setImageCache(ImageCache);
 		styles = (List<Map<String, Object>>) data;
 	}
 

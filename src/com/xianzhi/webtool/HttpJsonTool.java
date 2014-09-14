@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -49,11 +50,14 @@ import com.xianzhi.tool.db.KeyworkAndRecordHolder;
 import com.xianzhi.tool.db.KeyworkRholder;
 import com.xianzhi.tool.db.PatrolHelper;
 import com.xianzhi.tool.db.PatrolHolder;
+import com.xianzhi.tool.db.ReviewHelper;
 import com.xianzhi.tool.db.ReviewHolder;
 import com.xianzhi.tool.db.SeatInfoHelper;
 import com.xianzhi.tool.db.SeatInfoHolder;
 import com.xianzhi.tool.db.TrainCoachHelper;
 import com.xianzhi.tool.db.TrainCoachHolder;
+import com.xianzhi.tool.db.TrainDynamicHelper;
+import com.xianzhi.tool.db.TrainDynamicHolder;
 import com.xianzhi.tool.db.lock;
 import com.xianzhi.webtool.MyMultipartEntity.ProgressListener;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
@@ -64,18 +68,20 @@ public class HttpJsonTool {
 		correct, webfaild, wronginput, correctnoname
 	};
 
-	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
+//	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
 	// public static final String ServerUrl = "http://192.168.1.107:8080";
-	// public static final String ServerUrl =
+	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic/";
 	// "https://eaccess.syrailway.cn:8443/mapping/sjznbg";
 	private static HttpJsonTool httpjsontool = null;
 	public static String username = "";
+	public static int manageTrain = 0;
+	public static int reviewTrain = 0;
 	public static int userId = -1;
 	public static boolean state403 = false;
 	public static final String ERROR = "<error>";
 	public static final String SUCCESS = "<success>";
 	public static final String ERROR403 = "<error403>";
-
+	public static int train_id=-1;
 	public static synchronized HttpJsonTool getInstance() {
 		if (httpjsontool == null) {
 			httpjsontool = new HttpJsonTool();
@@ -130,12 +136,16 @@ public class HttpJsonTool {
 			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
 				builder.append(s);
 			}
+			L.i(builder.toString());
 			JSONObject jsonObject = new JSONObject(builder.toString());
 			String error = jsonObject.optString("error");
 			if (error.length() > 0) {
 				return ERROR + error;
 			}
 			JSONObject json = jsonObject.getJSONObject("user");
+			JSONObject userRight = json.getJSONObject("userRight");
+			manageTrain = userRight.optInt("manageTrain");
+			reviewTrain = userRight.optInt("reviewTrain");
 			userId = json.getInt("id");
 			SecurityCheckApp.token = json.getString("token");
 		} catch (UnsupportedEncodingException e) {
@@ -217,6 +227,90 @@ public class HttpJsonTool {
 			return ERROR + "ÍøÂç´íÎó";
 		}
 		return SUCCESS;
+	}
+
+	public synchronized String getTrainDynamic(Context context, int train_id) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl
+					+ "/train/getTrainDynamic.json?token="
+					+ SecurityCheckApp.token);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("id", String.valueOf(train_id)));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				return ERROR403;
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONArray list = jsonObject.getJSONArray("stationList");
+			insertTrainDynamic(context, list, train_id);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
+
+	private void insertTrainDynamic(Context context, JSONArray list,
+			int train_id) throws JSONException {
+		TrainDynamicHelper helper = new TrainDynamicHelper(context);
+		helper.delete_train_id(train_id);
+		synchronized (lock.Lock) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			db.beginTransaction();
+			for (int i = 0; i < list.length(); i++) {
+				JSONObject json = (JSONObject) list.get(i);
+				String STATION_NAME = json.optString("STATION_NAME");
+				String STATION_NO = json.optString("STATION_NO");
+				String TIME_ARRIVAL = json.optString("TIME_ARRIVAL");
+				String TIME_ARRIVAL_TD = json.optString("TIME_ARRIVAL_TD");
+				String TIME_DEPART = json.optString("TIME_DEPART");
+				String TIME_DEPART_TD = json.optString("TIME_DEPART_TD");
+				int CUR = json.optInt("CUR");
+				int ON_TIME = json.optInt("ON_TIME");
+				int PASSED = json.optInt("PASSED");
+				int PRE_PASSED = json.optInt("PRE_PASSED");
+				int NEXT_PASSED = json.optInt("NEXT_PASSED");
+
+				TrainDynamicHolder holder = new TrainDynamicHolder(-1,train_id,
+						STATION_NAME, STATION_NO, TIME_ARRIVAL,
+						TIME_ARRIVAL_TD, TIME_DEPART, TIME_DEPART_TD, CUR,
+						ON_TIME, PASSED, PRE_PASSED, NEXT_PASSED);
+				helper.insert(holder, db);
+			}
+			db.setTransactionSuccessful();
+			db.endTransaction();
+		}
+		helper.close();
 	}
 
 	public synchronized String addNewDynamicTrain(Context context,
@@ -354,11 +448,11 @@ public class HttpJsonTool {
 			}
 			StringBuilder builder = new StringBuilder();
 			HttpPost httpRequest = new HttpPost(ServerUrl
-					+ "/keyworkAndRecord/getByTrainId/1.json?token="
-					+ SecurityCheckApp.token);
+					+ "/keyworkAndRecord/getByTrainId/" + trainId
+					+ ".json?token=" + SecurityCheckApp.token);
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("train_id", String
-					.valueOf(trainId)));
+			// params.add(new BasicNameValuePair("train_id", String
+			// .valueOf(trainId)));
 			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 			HttpResponse response = client.execute(httpRequest);
 			int statusCode = response.getStatusLine().getStatusCode();
@@ -498,11 +592,11 @@ public class HttpJsonTool {
 			}
 			StringBuilder builder = new StringBuilder();
 			HttpPost httpRequest = new HttpPost(ServerUrl
-					+ "/review/getByTrainId/1.json?token="
+					+ "/review/getByTrainId/" + trainId + ".json?token="
 					+ SecurityCheckApp.token);
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("train_id", String
-					.valueOf(trainId)));
+			// params.add(new BasicNameValuePair("trainId", String
+			// .valueOf(trainId)));
 			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 			HttpResponse response = client.execute(httpRequest);
 			int statusCode = response.getStatusLine().getStatusCode();
@@ -521,6 +615,7 @@ public class HttpJsonTool {
 				return ERROR + error;
 			}
 			JSONArray reviewArray = jsonObject.getJSONArray("review");
+			insertReview(context, reviewArray, trainId);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -541,6 +636,37 @@ public class HttpJsonTool {
 		return SUCCESS;
 	}
 
+	private void insertReview(Context context, JSONArray list, int trainId)
+			throws JSONException {
+		ReviewHelper helper = new ReviewHelper(context);
+		helper.delete_Trainid(trainId);
+		synchronized (lock.Lock) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			db.beginTransaction();
+			for (int i = 0; i < list.length(); i++) {
+				JSONObject json = (JSONObject) list.get(i);
+				int id = json.optInt("id");
+				int train_id = json.optInt("train_id");
+				int user_id = json.optInt("user_id");
+				String user_name = json.optString("user_name");
+				String user_phone = json.optString("user_phone");
+				String position_name = json.optString("position_name");
+				String role_names = json.optString("role_names");
+				String message = json.optString("message");
+				int msg_status = json.optInt("msg_status");
+				int msg_type = json.optInt("msg_type");
+				long create_time = json.optLong("create_time");
+				ReviewHolder holder = new ReviewHolder(id, train_id, user_id,
+						user_name, user_phone, position_name, role_names,
+						message, msg_status, msg_type, create_time);
+				helper.insert(holder, db);
+			}
+			db.setTransactionSuccessful();
+			db.endTransaction();
+		}
+		helper.close();
+	}
+
 	public synchronized String saveReview(Context context, ReviewHolder holder) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
@@ -559,9 +685,9 @@ public class HttpJsonTool {
 			params.add(new BasicNameValuePair("message", String.valueOf(holder
 					.getMessage())));
 			params.add(new BasicNameValuePair("status", String.valueOf(holder
-					.getStatus())));
+					.getMsg_status())));
 			params.add(new BasicNameValuePair("type", String.valueOf(holder
-					.getType())));
+					.getMsg_type())));
 			if (holder.getCreate_time() != -1) {
 				params.add(new BasicNameValuePair("createTime", String
 						.valueOf(holder.getCreate_time())));
@@ -584,7 +710,7 @@ public class HttpJsonTool {
 			if (error.length() > 0) {
 				return ERROR + error;
 			}
-			JSONObject model = jsonObject.getJSONObject("model");
+			// JSONObject model = jsonObject.getJSONObject("model");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -667,10 +793,10 @@ public class HttpJsonTool {
 			db.beginTransaction();
 			for (int i = 0; i < list.length(); i++) {
 				JSONObject json = (JSONObject) list.get(i);
-				String coach_no = json.optString("coach_no");
-				String train_no = json.optString("train_no");
-				String coach_type = json.optString("coach_type");
-				int limit1 = json.optInt("limit1");
+				String coach_no = json.optString("COACH_NO");
+				String train_no = json.optString("TRAIN_NO");
+				String coach_type = json.optString("COACH_TYPE");
+				int limit1 = json.optInt("LIMIT1");
 				TrainCoachHolder holder = new TrainCoachHolder(coach_no,
 						train_no, coach_type, limit1, trainDate, trainCode,
 						trainId);
@@ -683,7 +809,7 @@ public class HttpJsonTool {
 	}
 
 	public synchronized String getSeatInfo(Context context, String trainCode,
-			String trainDate, String coachNo) {
+			String trainDate, String coachNo, Set<String> hashSet) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
 			if (cookieInfo != null) {
@@ -714,7 +840,8 @@ public class HttpJsonTool {
 				return ERROR + error;
 			}
 			JSONObject seat = jsonObject.getJSONObject("seat");
-			insertSeatInfo(seat,context,trainCode,trainDate,coachNo);
+			insertSeatInfo(seat, context, trainCode, trainDate, coachNo,
+					hashSet);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -734,48 +861,54 @@ public class HttpJsonTool {
 		}
 		return SUCCESS;
 	}
+
 	@SuppressWarnings("unchecked")
 	private void insertSeatInfo(JSONObject seat, Context context,
-			String trainCode, String trainDate, String coachNo)
-			throws JSONException {
+			String trainCode, String trainDate, String coachNo,
+			Set<String> hashSet) throws JSONException {
 		SeatInfoHelper helper = new SeatInfoHelper(context);
 		helper.delete_trainCode(trainCode, trainDate, coachNo);
-//		L.i("delete :"+delete);
+		// L.i("delete :"+delete);
 		Iterator<String> iterator = seat.keys();
 		synchronized (lock.Lock) {
 			SQLiteDatabase db = helper.getWritableDatabase();
 			db.beginTransaction();
 			while (iterator.hasNext()) {
 				String key = iterator.next();
+				hashSet.add(key);
 				JSONArray array = seat.getJSONArray(key);
 				for (int i = 0; i < array.length(); i++) {
 					JSONObject json = (JSONObject) array.get(i);
-					int ticket_type=json.optInt("ticket_type");
-					String coach_no=json.optString("coach_no");
-					String sale_mode=json.optString("sale_mode");
-					String to_tele_code=json.optString("to_tele_code");
-					String office_no=json.optString("office_no");
-					String board_train_code=json.optString("board_train_code");
-					String seat_type_code=json.optString("seat_type_code");
-					String seat_no=json.optString("seat_no");
-					String from_station_name=json.optString("from_station_name");
-					String statistics_date=json.optString("statistics_date");
-					String to_station_name=json.optString("to_station_name");
-					String ticket_source=json.optString("ticket_source");
-					String from_tele_code=json.optString("from_tele_code");
-					String train_date=json.optString("train_date");
-					int window_no=json.optInt("window_no");
-					float ticket_price=json.optInt("ticket_price");
-					String ticket_no=json.optString("ticket_no");
-					String inner_code=json.optString("inner_code");
-					String train_no=json.optString("train_no");
-//					L.i(seat_no+"  "+window_no);
-					SeatInfoHolder holder=new SeatInfoHolder(ticket_type, coach_no, sale_mode
-							, to_tele_code, office_no, board_train_code, seat_type_code, seat_no
-							, from_station_name, statistics_date, to_station_name, ticket_source
-							, from_tele_code, train_date, window_no, ticket_price, ticket_no
-							, inner_code, train_no);
-					helper.insert(holder,db);
+					int ticket_type = json.optInt("TICKET_TYPE");
+					String coach_no = json.optString("COACH_NO");
+					String sale_mode = json.optString("SALE_MODE");
+					String to_tele_code = json.optString("TO_TELE_CODE");
+					String office_no = json.optString("OFFICE_NO");
+					String board_train_code = json
+							.optString("BOARD_TRAIN_CODE");
+					String seat_type_code = json.optString("SEAT_TYPE_CODE");
+					String seat_no = json.optString("SEAT_NO");
+					String from_station_name = json
+							.optString("FROM_STATION_NAME");
+					String statistics_date = json.optString("STATISTICS_DATE");
+					String to_station_name = json.optString("TO_STATION_NAME");
+					String ticket_source = json.optString("TICKET_SOURCE");
+					String from_tele_code = json.optString("FROM_TELE_CODE");
+					String train_date = json.optString("TRAIN_DATE");
+					int window_no = json.optInt("WINDOW_NO");
+					float ticket_price = json.optInt("TICKET_PRICE");
+					String ticket_no = json.optString("TICKET_NO");
+					String inner_code = json.optString("INNER_CODE");
+					String train_no = json.optString("TRAIN_NO");
+					// L.i(seat_no+"  "+window_no);
+					SeatInfoHolder holder = new SeatInfoHolder(ticket_type,
+							coach_no, sale_mode, to_tele_code, office_no,
+							board_train_code, seat_type_code, seat_no,
+							from_station_name, statistics_date,
+							to_station_name, ticket_source, from_tele_code,
+							train_date, window_no, ticket_price, ticket_no,
+							inner_code, train_no);
+					helper.insert(holder, db);
 				}
 
 			}
@@ -785,9 +918,6 @@ public class HttpJsonTool {
 		helper.close();
 	}
 
-	
-	
-	
 	/**
 	 * °²È«¹ÜÀí
 	 * 
@@ -901,7 +1031,7 @@ public class HttpJsonTool {
 		helper.close();
 	}
 
-	public static final int PAGE_SIZE = 20;
+	public static final int PAGE_SIZE = 15;
 
 	public synchronized void checkOutPatrolList(Context context) {
 		try {
