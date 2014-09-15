@@ -9,14 +9,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.view.View;
-import android.widget.Toast;
 
 import com.xianzhi.stool.L;
 import com.xianzhi.stool.PreferencesHelper;
-import com.xianzhi.stool.T;
 import com.xianzhi.tool.db.KeyworkRholder;
-import com.xianzhi.tool.db.ReviewHolder;
 import com.xianzhi.webtool.HttpJsonTool;
 
 public class dynamicService extends Service {

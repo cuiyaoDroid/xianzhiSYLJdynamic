@@ -17,12 +17,12 @@ import com.xianzhisecuritycheck.main.SecurityCheckApp;
 public class InitActivity extends Activity {
 	public static String SDCardRoot = Environment.getExternalStorageDirectory()
 			.getAbsolutePath() + File.separator;
-	public static String RAIL = "cc_rail";
+	public static String RAIL = ".cc_rail";
 
 	public static void putVersion(String s) {
 		try {
 			FileOutputStream outStream = new FileOutputStream(SDCardRoot + RAIL
-					+ "/4.txt", false);
+					+ "/20.txt", false);
 			OutputStreamWriter writer = new OutputStreamWriter(outStream,
 					"gb2312");
 			writer.write(s);

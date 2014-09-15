@@ -27,6 +27,17 @@ public class KeyworkRholder {
 		this.worker_miss = worker_miss;
 		this.notes = notes;
 	}
+	
+	@Override
+	public String toString() {
+		return "KeyworkRholder [train_id=" + train_id + ", context=" + context
+				+ ", passenger_cnt=" + passenger_cnt + ", packet_cnt="
+				+ packet_cnt + ", passenger_rcpt=" + passenger_rcpt
+				+ ", catering_rcpt=" + catering_rcpt + ", passenger_miss="
+				+ passenger_miss + ", receipts_miss=" + receipts_miss
+				+ ", worker_miss=" + worker_miss + ", notes=" + notes + "]";
+	}
+
 	public boolean isfull(){
 		return context.trim().length()>0
 				&&passenger_cnt.trim().length()>0

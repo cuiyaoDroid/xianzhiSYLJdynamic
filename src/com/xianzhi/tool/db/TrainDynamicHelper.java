@@ -139,7 +139,7 @@ public class TrainDynamicHelper extends DBHelper {
 	public ArrayList<TrainDynamicHolder> selectDataTrainId(int trainId) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, null, TRAIN_ID + "=" + trainId, null, null, null, ID
-				+ " desc");
+				+ " asc");
 		ArrayList<TrainDynamicHolder> holderlist = new ArrayList<TrainDynamicHolder>();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			TrainDynamicHolder holder = getDataCursor(cursor);

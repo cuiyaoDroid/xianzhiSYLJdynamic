@@ -33,13 +33,13 @@ public class KeyworkAndRecordHelper extends DBHelper {
 		String sql = "Create table IF NOT EXISTS " + TABLE_NAME + "(" 
 				+ ID + " integer primary key autoincrement, " 
 				+ CONTEXT + " VARCHAR, " 
-				+ PASSENGER_CNT + " FLOAT, " 
-				+ PACKET_CNT + " FLOAT, " 
+				+ PASSENGER_CNT + " integer, " 
+				+ PACKET_CNT + " integer, " 
 				+ PASSENGER_RCPT + " FLOAT, " 
 				+ CATERING_RCPT + " FLOAT, "
-				+ PASSENGER_MISS+ " FLOAT, " 
+				+ PASSENGER_MISS+ " integer, " 
 				+ RECEIPTS_MISS + " FLOAT, "
-				+ WORKER_MISS + " FLOAT ,"
+				+ WORKER_MISS + " integer ,"
 				+ NOTES + " VARCHAR"
 				+ ");";
 		return sql;
@@ -80,13 +80,13 @@ public class KeyworkAndRecordHelper extends DBHelper {
 		
 		int train_id = cursor.getInt(id_column);
 		String context = cursor.getString(context_column);
-		float passenger_cnt = cursor.getFloat(passenger_cnt_column);
-		float packet_cnt = cursor.getFloat(packet_cnt_column);
+		int passenger_cnt = cursor.getInt(passenger_cnt_column);
+		int packet_cnt = cursor.getInt(packet_cnt_column);
 		float passenger_rcpt = cursor.getFloat(passenger_rcpt_column);
 		float catering_rcpt = cursor.getFloat(catering_rcpt_column);
-		float passenger_miss = cursor.getFloat(passenger_miss_column);
+		int passenger_miss = cursor.getInt(passenger_miss_column);
 		float receipts_miss = cursor.getFloat(receipts_miss_column);
-		float worker_miss = cursor.getFloat(worker_miss_column);
+		int worker_miss = cursor.getInt(worker_miss_column);
 		String notes = cursor.getString(notes_column);
 		
 		KeyworkAndRecordHolder holder = new KeyworkAndRecordHolder(train_id, context, passenger_cnt, packet_cnt

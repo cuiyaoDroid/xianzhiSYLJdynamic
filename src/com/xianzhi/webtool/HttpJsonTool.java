@@ -510,6 +510,7 @@ public class HttpJsonTool {
 			HttpPost httpRequest = new HttpPost(ServerUrl
 					+ "/keyworkAndRecord/save.json?token="
 					+ SecurityCheckApp.token);
+			L.i(holder.toString());
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("trainId", holder.getTrain_id()));
 			params.add(new BasicNameValuePair("context", holder.getContext()));
@@ -573,13 +574,13 @@ public class HttpJsonTool {
 		KeyworkAndRecordHelper helper = new KeyworkAndRecordHelper(context);
 		int train_id = crewRecord.optInt("train_id");
 		String strcontext = keywork.optString("context");
-		float passenger_cnt = crewRecord.optInt("passenger_cnt");
-		float packet_cnt = crewRecord.optInt("packet_cnt");
-		float passenger_rcpt = crewRecord.optInt("passenger_rcpt");
-		float catering_rcpt = crewRecord.optInt("catering_rcpt");
-		float passenger_miss = crewRecord.optInt("passenger_miss");
-		float receipts_miss = crewRecord.optInt("receipts_miss");
-		float worker_miss = crewRecord.optInt("worker_miss");
+		int passenger_cnt = crewRecord.optInt("passenger_cnt");
+		int packet_cnt = crewRecord.optInt("packet_cnt");
+		float passenger_rcpt = (float) crewRecord.optDouble("passenger_rcpt");
+		float catering_rcpt = (float) crewRecord.optDouble("catering_rcpt");
+		int passenger_miss = crewRecord.optInt("passenger_miss");
+		float receipts_miss = (float) crewRecord.optDouble("receipts_miss");
+		int worker_miss = crewRecord.optInt("worker_miss");
 		String notes = crewRecord.optString("notes");
 
 		KeyworkAndRecordHolder holder = new KeyworkAndRecordHolder(train_id,
