@@ -384,7 +384,7 @@ public class HttpJsonTool {
 				String current_team = json.optString("current_team");
 				int driving_status = json.optInt("driving_status");
 				if(json.optString("driving_status").equals("null")){
-					driving_status=4;
+					driving_status=5;
 				}
 				int user_id = json.optInt("user_id");
 				String job_number = json.optString("job_number");

@@ -33,7 +33,7 @@ public class ReviewListAdapter extends SimpleAdapter {
 		View result = super.getView(position, convertView, parent);
 		TextView content_txt = (TextView)result.findViewById(R.id.content_txt);
 		String create_time=(String) styles.get(position).get(ReviewHelper.CREATE_TIME);
-		String role_names=(String) styles.get(position).get(ReviewHelper.ROLE_NAMES);
+		String role_names=(String) styles.get(position).get(ReviewHelper.POSITION_NAME);
 		String user_name=(String) styles.get(position).get(ReviewHelper.USER_NAME);
 		int msg_type=(Integer) styles.get(position).get(ReviewHelper.MSG_TYPE);
 		String message=(String) styles.get(position).get(ReviewHelper.MESSAGE);

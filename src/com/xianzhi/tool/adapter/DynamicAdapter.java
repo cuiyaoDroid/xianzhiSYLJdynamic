@@ -37,23 +37,38 @@ public class DynamicAdapter extends SimpleAdapter {
 		}
 		Integer state=(Integer) styles.get(position).get("station");
 		TextView state_txt=(TextView)result.findViewById(R.id.station_txt);
-		
-		if(state==2){
-			int color = context.getResources().getColor(R.color.txt_green); 
+		int color;
+		switch (state) {
+		case 1:
+			color = context.getResources().getColor(R.color.txt_blue); 
 			state_txt.setTextColor(color);
 			state_txt.setText("待发");
-		}else if(state==3){
-			int color = context.getResources().getColor(R.color.Red); 
+			break;
+		case 2:
+			color = context.getResources().getColor(R.color.txt_blue); 
 			state_txt.setTextColor(color);
 			state_txt.setText("到达");
-		}else if(state==0){
-			int color = context.getResources().getColor(R.color.txt_blue); 
+			break;
+		case 3:
+			color = context.getResources().getColor(R.color.Red); 
 			state_txt.setTextColor(color);
 			state_txt.setText("晚点");
-		}else{
-			int color = context.getResources().getColor(R.color.txt_green); 
+			break;
+		case 4:
+			color = context.getResources().getColor(R.color.txt_green); 
 			state_txt.setTextColor(color);
-			state_txt.setText("正常");
+			state_txt.setText("提前");
+			break;
+		case 5:
+			color = context.getResources().getColor(R.color.txt_green); 
+			state_txt.setTextColor(color);
+			state_txt.setText("正点");
+			break;
+		default:
+			color = context.getResources().getColor(R.color.txt_green); 
+			state_txt.setTextColor(color);
+			state_txt.setText("正点");
+			break;
 		}
 		return result;
 	}

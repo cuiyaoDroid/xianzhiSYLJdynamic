@@ -173,7 +173,7 @@ public class ReviewInfoActivity extends Activity{
 			Map<String,Object>data=new HashMap<String, Object>();
 			data.put(ReviewHelper.CREATE_TIME, format.format(holder.getCreate_time()));
 			data.put(ReviewHelper.ID, holder.getId());
-			data.put(ReviewHelper.ROLE_NAMES,holder.getRole_names());
+			data.put(ReviewHelper.POSITION_NAME,holder.getPosition_name());
 			data.put(ReviewHelper.USER_NAME, holder.getUser_name());
 			data.put(ReviewHelper.MSG_TYPE, holder.getMsg_type());
 			data.put(ReviewHelper.MESSAGE, holder.getMessage());
