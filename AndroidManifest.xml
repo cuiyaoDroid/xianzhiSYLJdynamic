@@ -20,18 +20,19 @@
         android:theme="@style/AppTheme" >
         <service android:name="com.xianzhi.service.dynamicService" />
         <activity android:name="com.xianzhisylj.dynamic.InitActivity" >
+            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <!--
+-->
+            
             <intent-filter>
                 <action android:name="com.xianzhisylj.dynamic" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            -->
+            
         </activity>
         <activity
             android:name="com.xianzhisylj.dynamic.LoginActivity"

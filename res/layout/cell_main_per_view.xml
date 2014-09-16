@@ -22,6 +22,16 @@
 			app:roundHeight="5dp"
             android:background="@android:color/darker_gray"
             android:src="@drawable/img_uh_big_default" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignRight="@+id/head_img"
+            android:layout_alignBottom="@+id/head_img"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_tel" />
+
     </RelativeLayout>
 
     <TextView

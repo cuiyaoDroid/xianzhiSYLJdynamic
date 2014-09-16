@@ -68,9 +68,9 @@ public class HttpJsonTool {
 		correct, webfaild, wronginput, correctnoname
 	};
 
-	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
+//	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
 	// public static final String ServerUrl = "http://192.168.1.107:8080";
-//	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic/";
+	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic/";
 	// "https://eaccess.syrailway.cn:8443/mapping/sjznbg";
 	private static HttpJsonTool httpjsontool = null;
 	public static String username = "";
