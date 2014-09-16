@@ -3,6 +3,7 @@ package com.xianzhisylj.dynamic;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import android.app.Activity;
@@ -259,21 +260,27 @@ public class CompartmentActivity extends Activity {
 
 	private void refreshCellToGrid_1() {
 		grid1_Data.clear();
+		int start_num=0;
+		Iterator<String> mIterator=hashSet.iterator();
+		if(mIterator.hasNext()){
+			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1));
+		}
+			
 		for (int i = 0; i < seat_y*seat_topX; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			String letter="";
 			if(train_type.equals("RZ")||train_type.equals("YZ")){
-				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1));
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
 			}else if(train_type.equals("RZ2")){
 				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
 			}else if(train_type.equals("RZ1")){
 				letter=String.format("%03d" + letters2[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
 			}else if(train_type.equals("YW")||train_type.equals("RW")||train_type.equals("SYW")||train_type.equals("SRW")){
-				letter=String.format("%04d", (i % seat_y)*seat_topX+(i/seat_y+1));
+				letter=String.format("%04d", (i % seat_y)*seat_topX+(i/seat_y+1)+start_num);
 			}else if(train_type.equals("SRZ")||train_type.equals("SYZ")){
-				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+1000);
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
 			}else {
-				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
 			}
 			map.put("letter",letter);
 			map.put("full", hashSet.contains(letter));
@@ -287,19 +294,25 @@ public class CompartmentActivity extends Activity {
 		if(train_type.equals("YW")||train_type.equals("RW")||train_type.equals("SYW")||train_type.equals("SRW")){
 			return;
 		}
+		int start_num=0;
+		Iterator<String> mIterator=hashSet.iterator();
+		if(mIterator.hasNext()){
+			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1));
+		}
+			
 		for (int i = 0; i < seat_y*seat_bottomX; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			String letter="";
 			if(train_type.equals("RZ")||train_type.equals("YZ")){
-				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1));
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
 			}else if(train_type.equals("RZ2")){
 				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
 			}else if(train_type.equals("RZ1")){
 				letter=String.format("%03d" + letters2[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
 			}else if(train_type.equals("SRZ")||train_type.equals("SYZ")){
-				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+1000);
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
 			}else {
-				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
 			}
 			
 			map.put("letter",letter);
