@@ -67,7 +67,7 @@ public class DynamicMainActivity extends Activity {
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
 				return HttpJsonTool.getInstance().getTrainList(minId, keyword,
-						getApplicationContext());
+						getApplicationContext(),false);
 			}
 
 			@Override
@@ -88,14 +88,14 @@ public class DynamicMainActivity extends Activity {
 		task.execute();
 	}
 	AsyncTask<Void, Void, String> TrainListDatetask = null;
-	private void getTrainListDate(final int page,final String keyword) {
+	private void getTrainListDate(final int page,final String keyword,final boolean ifclear) {
 		TrainListDatetask = new AsyncTask<Void, Void, String>() {
 
 			@Override
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
 				return HttpJsonTool.getInstance().getTrainList(-1, keyword,
-						getApplicationContext());
+						getApplicationContext(),ifclear);
 			}
 
 			@Override
@@ -159,9 +159,9 @@ public class DynamicMainActivity extends Activity {
 				String keyword = searchEdit.getText().toString().trim();
 				page = new Pager(0, HttpJsonTool.PAGE_SIZE);
 				if(keyword.length()==0){
-					getTrainListDate(0,null);
+					getTrainListDate(0,null,true);
 				}else{
-					getTrainListDate(0,keyword);
+					getTrainListDate(0,keyword,true);
 				}
 				
 			}
@@ -223,7 +223,7 @@ public class DynamicMainActivity extends Activity {
 					page = new Pager(0, HttpJsonTool.PAGE_SIZE);
 					String keyword = searchEdit.getText().toString().trim();
 					progressBar.setVisibility(View.VISIBLE);
-					getTrainListDate(0,keyword);
+					getTrainListDate(0,keyword,false);
 					KeyBroadTool.hideKeyboard(getApplicationContext(),
 							searchEdit);
 				}
@@ -241,7 +241,7 @@ public class DynamicMainActivity extends Activity {
 				page = new Pager(0, HttpJsonTool.PAGE_SIZE);
 				String keyword = searchEdit.getText().toString().trim();
 				progressBar.setVisibility(View.VISIBLE);
-				getTrainListDate(0,keyword);
+				getTrainListDate(0,keyword,false);
 				KeyBroadTool.hideKeyboard(getApplicationContext(), searchEdit);
 			}
 		});
@@ -265,7 +265,7 @@ public class DynamicMainActivity extends Activity {
 		super.onResume();
 		progressBar.setVisibility(View.VISIBLE);
 		refreshParolData(page.curpage, null);
-		getTrainListDate(page.curpage,null);
+		getTrainListDate(page.curpage,null,false);
 	}
 	@Override
 	protected void onPause() {

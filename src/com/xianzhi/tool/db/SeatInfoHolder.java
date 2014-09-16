@@ -206,13 +206,13 @@ public class SeatInfoHolder {
 	@Override
 	public String toString() {
 		return "车票类型：" + 1 + "\r\n编组："
-				+ coach_no + "\r\n售票方式：" + sale_mode + "\r\n办公号：" + office_no
+				+ coach_no + "\r\n售票方式：" + sale_mode + "\r\n售票处号：" + office_no
 				+ "\r\n车次：" + board_train_code
 				+ "\r\n坐位类型：" + seat_type_code + "\r\n坐位号：" + seat_no
 				+ "\r\n起始：" + from_station_name
 				+ "\r\n到达："+ to_station_name + "\r\n统计时间：" + statistics_date + "\r\n发车时间："
 				+ train_date + "\r\n窗口号：" + window_no + "\r\n车票价格："
-				+ ticket_price + "\r\n车票号：" + ticket_no + "\r\n全车辆号：" + train_no 
+				+ ticket_price + "\r\n票号：" + ticket_no + "\r\n全车辆号：" + train_no 
 				+ "\r\n----------------------------------------";
 	}
 

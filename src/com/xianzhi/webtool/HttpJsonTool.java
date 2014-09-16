@@ -169,7 +169,7 @@ public class HttpJsonTool {
 	}
 
 	public synchronized String getTrainList(int minId, String tranCode,
-			Context context) {
+			Context context,boolean ifclear) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
 			if (cookieInfo != null) {
@@ -208,7 +208,7 @@ public class HttpJsonTool {
 				return ERROR + error;
 			}
 			JSONArray list = jsonObject.getJSONArray("trainList");
-			insertTrainList(context, list);
+			insertTrainList(context, list,ifclear);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -368,9 +368,12 @@ public class HttpJsonTool {
 		return SUCCESS;
 	}
 
-	private void insertTrainList(Context context, JSONArray list)
+	private void insertTrainList(Context context, JSONArray list,boolean ifclear)
 			throws JSONException {
 		DynamicListHelper helper = new DynamicListHelper(context);
+		if(ifclear){
+			helper.clear();
+		}
 		synchronized (lock.Lock) {
 			SQLiteDatabase db = helper.getWritableDatabase();
 			db.beginTransaction();
@@ -903,7 +906,7 @@ public class HttpJsonTool {
 					String from_tele_code = json.optString("FROM_TELE_CODE");
 					String train_date = json.optString("TRAIN_DATE");
 					int window_no = json.optInt("WINDOW_NO");
-					float ticket_price = json.optInt("TICKET_PRICE");
+					float ticket_price = (float) json.optDouble("TICKET_PRICE")/10;
 					String ticket_no = json.optString("TICKET_NO");
 					String inner_code = json.optString("INNER_CODE");
 					String train_no = json.optString("TRAIN_NO");

@@ -268,8 +268,10 @@ public class CompartmentActivity extends Activity {
 				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
 			}else if(train_type.equals("RZ1")){
 				letter=String.format("%03d" + letters2[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
-			}else if(train_type.equals("YW")||train_type.equals("RW")){
+			}else if(train_type.equals("YW")||train_type.equals("RW")||train_type.equals("SYW")||train_type.equals("SRW")){
 				letter=String.format("%04d", (i % seat_y)*seat_topX+(i/seat_y+1));
+			}else if(train_type.equals("SRZ")||train_type.equals("SYZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+1000);
 			}else {
 				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
 			}
@@ -282,7 +284,7 @@ public class CompartmentActivity extends Activity {
 
 	private void refreshCellToGrid_2() {
 		grid2_Data.clear();
-		if(train_type.equals("YW")||train_type.equals("RW")){
+		if(train_type.equals("YW")||train_type.equals("RW")||train_type.equals("SYW")||train_type.equals("SRW")){
 			return;
 		}
 		for (int i = 0; i < seat_y*seat_bottomX; i++) {
@@ -294,6 +296,8 @@ public class CompartmentActivity extends Activity {
 				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
 			}else if(train_type.equals("RZ1")){
 				letter=String.format("%03d" + letters2[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
+			}else if(train_type.equals("SRZ")||train_type.equals("SYZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+1000);
 			}else {
 				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
 			}

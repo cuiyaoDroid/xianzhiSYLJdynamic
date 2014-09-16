@@ -3,17 +3,16 @@ package com.xianzhi.tool.adapter;
 import java.util.List;
 import java.util.Map;
 
-import com.xianzhi.tool.db.ReviewHelper;
-import com.xianzhisylj.dynamic.R;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.text.Html;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import com.xianzhi.tool.db.ReviewHelper;
+import com.xianzhisylj.dynamic.R;
 
 
 public class ReviewListAdapter extends SimpleAdapter {

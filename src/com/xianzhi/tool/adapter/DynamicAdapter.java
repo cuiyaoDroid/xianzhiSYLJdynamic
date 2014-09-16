@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.xianzhi.tool.db.DynamicHolder;
 import com.xianzhisylj.dynamic.R;
 
 
@@ -32,9 +31,7 @@ public class DynamicAdapter extends SimpleAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		View result = super.getView(position, convertView, parent);
-		if(position%2==1){
-			result.setBackgroundResource(R.drawable.listitem_bg_double);
-		}
+		result.setBackgroundResource(position%2==1?R.drawable.listitem_bg_double:R.drawable.listitem_bg_single);
 		Integer state=(Integer) styles.get(position).get("station");
 		TextView state_txt=(TextView)result.findViewById(R.id.station_txt);
 		int color;
