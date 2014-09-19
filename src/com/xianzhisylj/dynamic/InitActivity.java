@@ -11,6 +11,7 @@ import android.os.Environment;
 
 import com.xianzhi.service.dynamicService;
 import com.xianzhi.tool.db.DBHelper;
+import com.xianzhi.webtool.HttpJsonTool;
 import com.xianzhi.webtool.HttpsClient;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
 
@@ -56,6 +57,7 @@ public class InitActivity extends Activity {
 //		SecurityCheckApp.userId = bundle.getInt("userId");
 //		putVersion(getString(R.string.version));
 		HttpsClient.getInstance().init(getApplicationContext());
+		HttpJsonTool.getInstance().getCookieInfo();
 		startService(new Intent(InitActivity.this, dynamicService.class));
 		Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
 		startActivityForResult(intent, RESULT_OK);

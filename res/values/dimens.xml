@@ -29,5 +29,8 @@
     <dimen name="updatebar_height">40.0dip</dimen>
     <dimen name="updatebar_content_height">40.0dip</dimen>
     <dimen name="updatebar_padding">10.0dip</dimen>
-
+    
+	<dimen name="text_small">12sp</dimen>
+	<dimen name="text_normal">14sp</dimen>
+	<dimen name="text_big">16sp</dimen>
 </resources>
