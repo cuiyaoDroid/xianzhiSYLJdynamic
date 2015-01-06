@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="Purple">#73058e</color>
+	<color name="touming">#00000000</color>
+	<color name="white">#ffffff</color>
+	<color name="lightgray">#f0f5f5</color>
+    <color name="lucensy">#00000001</color>
+    <color name="translucency">#e0000000</color>
+    <color name="black">#000000</color>
+    <color name="seat_text">#6E9FDF</color>
+    <color name="seat_text_full">#000066</color>
+    <!-- <color name="red">#bf242a</color> -->
+    <color name="transparent">#00000000</color>
+    <color name="light_orange">#fcb75c</color>
+    <color name="alpha_00">#00000000</color>
+    <color name="trans">#50000000</color>
+    <color name="background">#e5e5e5</color>
+    <color name="transparent_background">#50000000</color>
+    <color name="text_gray">#68696D</color>
+    <color name="gray">#30505050</color>
+    <color name="grey21">#363636</color>
+    <color name="gold">#b89766</color>
+    <color name="LightSkyBlue">#F0F5F5</color>
+    <color name="Black">#000000</color>
+    <color name="LightYellow">#FFFFE0</color>
+    <color name="Yellow">#FFFF00</color>
+    <color name="Green">#008000</color>
+    <color name="White">#FFFFFF</color>
+    <color name="transblue">#6042A6E5</color>
+    <color name="transblack">#507F7F7F</color>
+    <color name="trans_white">#60FFFFFF</color>
+    <color name="trans_h_white">#40FFFFFF</color>
+    <color name="hintgray">#929292</color>
+    <color name="hintlightgray">#50929292</color>
+    <color name="highlighttext">#FF5400</color>
+    <color name="transdarkblack">#ee000000</color>
+    <color name="notification_blue">#68B4F0</color>
+    <color name="lightyellow">#F9F4EC</color>
+    <color name="button_normal">#00000000</color>
+	<color name="button_pressed">#FF2572AC</color>
+	<color name="darkred">#660000</color>
+	<color name="listitem_even">#F7F7F7</color>
+	<color name="bg_grag">#E5E5E5</color>
+	<color name="bg_light_grag">#EEEEEE</color>
+	
+	<color name="txt_red">#AA0BE5</color>
+	<color name="txt_green">#108900</color>
+	<color name="txt_blue">#006AE2</color>
+	<color name="txt_gray">#9315d8</color>
+	<color name="txt_darkgreen">#5c5d5f</color>
+     <!-- 字体颜色 -->
+    <!-- 灰色、很淡 -->
+    <color name="YST_F_GRAY_A">#909090</color>
+    <!-- 灰色、中淡 -->
+    <color name="YST_F_GRAY_B">#606060</color>
+    <!-- 灰色、重 -->
+    <color name="YST_F_GRAY_C">#202020</color>
+    <!-- 白色 -->
+    <color name="YST_F_WHITE">#ffffff</color>
+    <!-- 蓝色 -->
+    <color name="YST_F_BLUE">#3695de</color>
+    <!-- 红色 -->
+    <color name="YST_F_RED">#c50909</color>
+    <!-- 绿色 -->
+    <color name="YST_F_GREEN">#0fc420</color>
+    <!-- 黄色 -->
+    <color name="YST_F_YELLOW">#F2BD2F</color>
+
+    <!-- 背景，描边 -->
+    <!-- 背景灰、很淡 -->
+    <color name="YST_B_GRAY_A">#f7f7f7</color>
+    <!-- 描边灰、中淡 -->
+    <color name="YST_B_GRAY_B">#d7d7d7</color>
+    <!-- 复选灰、淡重 -->
+    <color name="YST_B_GRAY_C">#9c9c9c</color>
+
+    <!-- 复选灰、中重 -->
+    <color name="YST_B_GRAY_D">#6d6d6d</color>
+    <!-- 高亮、淡蓝色 -->
+    <color name="YST_B_BLUE">#69CFF1</color>
+    <!-- 背景白 -->
+    <color name="YST_B_WHITE">#ffffff</color>
+    <!-- 粉红色  -->
+    <color name="YST_B_RED">#be36ac</color>
+    <!-- 深蓝色 -->
+    <color name="orange">#88ffa500</color>
+    <color name="YST_B_BLUE_A">#427cdb</color>
+    <color name="dark_orange">#FF6000</color>
+    <color name="blue">#006AE2</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#248B00</color>
+    <color name="Red">#FF0000</color>
+    <color name="circle_color">#FF9000</color>
+    <color name="ring_color">#2E79C3</color>
+</resources>

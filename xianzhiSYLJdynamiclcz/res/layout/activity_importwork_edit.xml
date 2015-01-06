@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/import_input_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/hint_import_input" 
+        android:imeOptions="flagNoExtractUi"
+        android:textSize="12sp"
+        android:minLines="6"
+       	android:padding="5dp"
+       	android:gravity="top|left"
+        android:background="@drawable/radiu_tableview_bg">
+    </EditText>
+	<TextView 
+	    android:id="@+id/num_txt"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:textColor="@color/text_gray"
+	    android:layout_marginTop="5dp"
+	    android:visibility="gone"
+	    android:layout_gravity="right"
+	    android:text="@string/remain208"
+	    android:textSize="10sp"/>
+</LinearLayout>

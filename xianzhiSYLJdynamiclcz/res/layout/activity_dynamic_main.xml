@@ -1,0 +1,196 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+	<LinearLayout
+        android:id="@+id/blue_line"
+        android:layout_width="fill_parent"
+        android:layout_height="6dp"
+        android:background="@drawable/bg_top_small"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_top"
+        android:gravity="center_vertical"
+        android:layout_below="@+id/blue_line"
+        android:visibility="gone"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/goback_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/btn_top_prev"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button"/>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="4dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:visibility="invisible" />
+            <!--  android:src="@drawable/img_title_train"-->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="16dip"
+            android:layout_height="16dip"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/search_btn"
+            android:indeterminateDrawable="@drawable/common_loading4"
+            android:layout_marginLeft="8dp"
+            android:visibility="gone" />
+        <ImageButton
+            android:id="@+id/search_btn"
+            android:layout_width="40dp"
+            android:layout_height="25dp"
+            android:layout_toLeftOf="@+id/imageView2"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_top_search"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button" />
+        <ImageButton
+            android:id="@+id/addnew_btn"
+            android:layout_width="40dp"
+            android:layout_height="25dp"
+            android:layout_toRightOf="@+id/imageView2"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_top_edit"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button" />
+        <ImageButton
+            android:id="@+id/right_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/btn_top_next_day"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button"/>
+    </RelativeLayout>
+     
+    <LinearLayout
+        android:id="@+id/grid_linear"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:background="@drawable/bg_train_title"
+        android:orientation="horizontal"
+        android:layout_below="@+id/title"
+        android:weightSum="6.2" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="车次"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.4"
+            android:gravity="center"
+            android:text="发车日期"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:text="始发站"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="终到站"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="当值班组"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+	<!--  
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="行车区间"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+-->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:text="状态"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:text="列车长"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+    </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/grid_linear"
+        android:layout_margin="5dp" />
+    <com.xianzhi.tool.view.PullDownListView
+        android:id="@+id/pulldownlist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:layout_below="@+id/progressBar2">
+
+        <ListView
+            android:id="@+id/dynamic_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+    </com.xianzhi.tool.view.PullDownListView>
+
+    <ImageButton
+            android:id="@+id/show_btn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/title"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/btn_top_show"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button"/>
+
+</RelativeLayout>
