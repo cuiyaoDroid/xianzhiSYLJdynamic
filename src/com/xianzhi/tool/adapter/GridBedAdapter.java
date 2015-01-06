@@ -35,7 +35,7 @@ public class GridBedAdapter extends SimpleAdapter {
 		TextView set_txt=(TextView)result.findViewById(R.id.seat_num);
 		img.setImageResource(full?R.drawable.img_bed_sold:R.drawable.img_bed);
 //		set_txt.setVisibility(full?View.VISIBLE:View.VISIBLE);
-		set_txt.setTextColor(full?context.getResources().getColor(android.R.color.black)
+		set_txt.setTextColor(full?context.getResources().getColor(R.color.seat_text_full)
 				:context.getResources().getColor(R.color.seat_text));
 		return result;
 	}

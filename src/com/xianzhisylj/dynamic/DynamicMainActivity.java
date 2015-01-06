@@ -2,8 +2,10 @@ package com.xianzhisylj.dynamic;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
@@ -12,23 +14,23 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.xianzhi.stool.KeyBroadTool;
 import com.xianzhi.stool.L;
 import com.xianzhi.stool.T;
 import com.xianzhi.tool.adapter.DynamicAdapter;
@@ -38,26 +40,61 @@ import com.xianzhi.tool.db.DynamicListHolder;
 import com.xianzhi.tool.db.Pager;
 import com.xianzhi.tool.view.PullDownListView;
 import com.xianzhi.tool.view.PullDownListView.OnRefreshListioner;
+import com.xianzhi.tool.view.PullDownListView.filtCallBack;
 import com.xianzhi.webtool.HttpJsonTool;
+import com.xianzhi.webtool.HttpStringMD5;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
 
-public class DynamicMainActivity extends Activity {
+public class DynamicMainActivity extends Activity implements OnClickListener {
 	private PullDownListView pulldownlist;
 	private List<Map<String, Object>> Datalist;
 	private DynamicAdapter adapter;
 	private Pager page;
-	private EditText searchEdit;
-	private ImageButton settingBtn;
 	private ProgressBar progressBar;
 	private ImageButton right_btn;
+	private ImageButton goback_btn;
+
+	private ImageButton show_btn;
+	private ImageButton addnew_btn;
+	private ImageButton search_btn;
+	private RelativeLayout title;
+	private LinearLayout blue_line;
+
+	private Calendar calendar;
+	private long time;
+	@SuppressLint("SimpleDateFormat")
+	private SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+	private String date;
+	private ProgressBar progressBar2;
+	private long maxStartTime = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dynamic_main);
 		upGradeDBifnessage();
+		setTime(0);
 		page = new Pager(0, HttpJsonTool.PAGE_SIZE);
 		initContentView();
+		refreshParolData(page.curpage, null);
+		progressBar2.setVisibility(View.VISIBLE);
+		progressBar.setVisibility(View.VISIBLE);
+		getTrainListDate(page.curpage, null, true, true);
+
+	}
+
+	private String today;
+
+	private void setTime(int day) {
+		if (day == 0 || calendar == null) {
+			calendar = Calendar.getInstance(Locale.CHINA);
+			time = System.currentTimeMillis();
+			calendar.setTimeInMillis(time);
+			today = format.format(time);
+		}
+		calendar.add(Calendar.DAY_OF_YEAR, day);
+		time = calendar.getTimeInMillis();
+		date = format.format(time);
 	}
 
 	private void getTrainMoreListDate(final String keyword) {
@@ -66,8 +103,11 @@ public class DynamicMainActivity extends Activity {
 			@Override
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
+				SimpleDateFormat format = new SimpleDateFormat(
+						"yyyy-MM-dd HH:mm:ss");
 				return HttpJsonTool.getInstance().getTrainList(minId, keyword,
-						getApplicationContext(),false);
+						getApplicationContext(), false, date, -1,
+						format.format(maxStartTime));
 			}
 
 			@Override
@@ -87,15 +127,40 @@ public class DynamicMainActivity extends Activity {
 		};
 		task.execute();
 	}
+
 	AsyncTask<Void, Void, String> TrainListDatetask = null;
-	private void getTrainListDate(final int page,final String keyword,final boolean ifclear) {
+
+	private void getTrainListDate(final int page, final String keyword,
+			final boolean ifclear, final boolean login) {
+		if (TrainListDatetask != null) {
+			TrainListDatetask.cancel(true);
+		}
 		TrainListDatetask = new AsyncTask<Void, Void, String>() {
 
 			@Override
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
+				if (login) {
+					// TelephonyManager tm = (TelephonyManager)
+					// getSystemService(TELEPHONY_SERVICE);
+					// String imei=tm.getDeviceId();
+					// L.i("imei:"+imei);
+					// String result =
+					// HttpJsonTool.getInstance().userLoginByImei(imei);
+					// if (result.startsWith(HttpJsonTool.ERROR)) {
+					// HttpJsonTool.getInstance().userLoginByImei(imei);
+					// }
+					if (SecurityCheckApp.token.length() == 0) {
+						String result = HttpJsonTool.getInstance().login(
+								"000000", HttpStringMD5.md5("123456"));
+						if (result.startsWith(HttpJsonTool.ERROR)) {
+							HttpJsonTool.getInstance().login("000000",
+									HttpStringMD5.md5("123456"));
+						}
+					}
+				}
 				return HttpJsonTool.getInstance().getTrainList(-1, keyword,
-						getApplicationContext(),ifclear);
+						getApplicationContext(), ifclear, date, -1, null);
 			}
 
 			@Override
@@ -103,6 +168,8 @@ public class DynamicMainActivity extends Activity {
 				// TODO Auto-generated method stub
 				super.onPostExecute(result);
 				progressBar.setVisibility(View.GONE);
+				progressBar2.setVisibility(View.GONE);
+				pulldownlist.setVisibility(View.VISIBLE);
 				if (result.startsWith(HttpJsonTool.ERROR403)) {
 					gotoLoginView();
 					return;
@@ -137,8 +204,57 @@ public class DynamicMainActivity extends Activity {
 		helper.close();
 	}
 
+	private filtCallBack callback = new filtCallBack() {
+
+		@Override
+		public void filt(boolean left) {
+			// TODO Auto-generated method stub
+			if (TrainListDatetask != null) {
+				TrainListDatetask.cancel(true);
+			}
+			setTime(left ? 1 : -1);
+			// progressBar.setVisibility(View.VISIBLE);
+			page = new Pager(0, HttpJsonTool.PAGE_SIZE);
+			Animation anim = AnimationUtils.loadAnimation(
+					getApplicationContext(), left ? R.anim.slide_left_out
+							: R.anim.slide_right_out);
+			pulldownlist.setAnimation(anim);
+			anim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					// TODO Auto-generated method stub
+					int size = refreshParolData(page.curpage, null);
+					if (size == HttpJsonTool.PAGE_SIZE) {
+						progressBar2.setVisibility(View.GONE);
+						pulldownlist.setVisibility(View.VISIBLE);
+						pulldownlist.clearAnimation();
+						pulldownlist.setAnimation(AnimationUtils
+								.loadAnimation(getApplicationContext(),
+										android.R.anim.fade_in));
+					} else {
+						getTrainListDate(0, null, false, false);
+					}
+				}
+			});
+			progressBar2.setVisibility(View.VISIBLE);
+			pulldownlist.setVisibility(View.GONE);
+
+		}
+	};
+
 	private void initContentView() {
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
 		Datalist = new ArrayList<Map<String, Object>>();
 		ListView dynamicList = (ListView) findViewById(R.id.dynamic_list);
 		adapter = new DynamicAdapter(getApplicationContext(), Datalist,
@@ -152,35 +268,22 @@ public class DynamicMainActivity extends Activity {
 		// progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		pulldownlist = (PullDownListView) findViewById(R.id.pulldownlist);
 		pulldownlist.setRefreshListioner(new OnRefreshListioner() {
-
 			@Override
 			public void onRefresh() {
 				// TODO Auto-generated method stub
-				String keyword = searchEdit.getText().toString().trim();
 				page = new Pager(0, HttpJsonTool.PAGE_SIZE);
-				if(keyword.length()==0){
-					getTrainListDate(0,null,true);
-				}else{
-					getTrainListDate(0,keyword,true);
-				}
-				
+				getTrainListDate(0, null, true, false);
 			}
 
 			@Override
 			public void onLoadMore() {
 				// TODO Auto-generated method stub
-				String keyword = searchEdit.getText().toString().trim();
-				if(keyword.length()==0){
-					getTrainMoreListDate(null);
-				}else{
-					getTrainMoreListDate(keyword);
-				}
-				
+				getTrainMoreListDate(null);
 			}
 		});
+		pulldownlist.setCallback(callback);
 		dynamicList = pulldownlist.mListView;
 		pulldownlist.setMore(true);
-
 		dynamicList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -190,7 +293,7 @@ public class DynamicMainActivity extends Activity {
 				Intent intent = new Intent(getApplicationContext(),
 						TabDetailActivity.class);
 				int id = (Integer) Datalist.get(position - 1).get("id");
-				int user_id = (Integer) Datalist.get(position - 1).get(
+				String user_id = (String) Datalist.get(position - 1).get(
 						"user_id");
 				intent.putExtra("id", id);
 				intent.putExtra("user_id", user_id);
@@ -199,6 +302,9 @@ public class DynamicMainActivity extends Activity {
 				int isFinal = (Integer) Datalist.get(position - 1).get(
 						"isFinal");
 				intent.putExtra("isFinal", isFinal);
+				int status = (Integer) Datalist.get(position - 1)
+						.get("station");
+				intent.putExtra("status", status);
 				Log.i("id", "" + id);
 				startActivityForResult(intent, Activity.RESULT_OK);
 			}
@@ -212,91 +318,67 @@ public class DynamicMainActivity extends Activity {
 				return false;
 			}
 		});
-		searchEdit = (EditText) findViewById(R.id.search_edit);
-		searchEdit.setOnEditorActionListener(new OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event) {
-				// TODO Auto-generated method stub
-				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-					page = new Pager(0, HttpJsonTool.PAGE_SIZE);
-					String keyword = searchEdit.getText().toString().trim();
-					progressBar.setVisibility(View.VISIBLE);
-					getTrainListDate(0,keyword,false);
-					KeyBroadTool.hideKeyboard(getApplicationContext(),
-							searchEdit);
-				}
-				return false;
-
-			}
-		});
-
-		settingBtn = (ImageButton) findViewById(R.id.setting_btn);
-		settingBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				page = new Pager(0, HttpJsonTool.PAGE_SIZE);
-				String keyword = searchEdit.getText().toString().trim();
-				progressBar.setVisibility(View.VISIBLE);
-				getTrainListDate(0,keyword,false);
-				KeyBroadTool.hideKeyboard(getApplicationContext(), searchEdit);
-			}
-		});
 		right_btn = (ImageButton) findViewById(R.id.right_btn);
-		right_btn.setVisibility(HttpJsonTool.manageTrain==1?View.VISIBLE:View.GONE);
-		right_btn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(DynamicMainActivity.this,
-						addNewDynamicActivity.class);
-				startActivity(intent);
-			}
-		});
+		right_btn.setOnClickListener(this);
+		goback_btn = (ImageButton) findViewById(R.id.goback_btn);
+		goback_btn.setOnClickListener(this);
+		show_btn = (ImageButton) findViewById(R.id.show_btn);
+		show_btn.setOnClickListener(this);
+		addnew_btn = (ImageButton) findViewById(R.id.addnew_btn);
+		addnew_btn.setOnClickListener(this);
+		search_btn = (ImageButton) findViewById(R.id.search_btn);
+		search_btn.setOnClickListener(this);
+		title = (RelativeLayout) findViewById(R.id.title);
+		blue_line = (LinearLayout) findViewById(R.id.blue_line);
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		progressBar.setVisibility(View.VISIBLE);
-		refreshParolData(page.curpage, null);
-		getTrainListDate(page.curpage,null,false);
+		// progressBar.setVisibility(View.VISIBLE);
+
 	}
+
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		if(TrainListDatetask!=null){
+		if (TrainListDatetask != null) {
 			TrainListDatetask.cancel(true);
 		}
-		searchEdit.setText("");
+		progressBar2.setVisibility(View.GONE);
+		pulldownlist.setVisibility(View.VISIBLE);
 	}
+
 	private int minId = 0;
 
 	@SuppressLint("SimpleDateFormat")
-	private void refreshParolData(int mPage, String keyword) {
+	private int refreshParolData(int mPage, String keyword) {
 		Datalist.clear();
 		DynamicListHelper helper = new DynamicListHelper(
 				getApplicationContext());
 		ArrayList<DynamicListHolder> holders;
-		if (keyword==null) {
-			holders = helper.selectData(0, (mPage + 1) * page.pagesize);
+		if (keyword == null) {
+			if (today.equals(date)) {
+				holders = helper.selectDataOnWay(0,
+						(mPage + 1) * page.pagesize, date);
+			} else {
+				holders = helper.selectData(0, (mPage + 1) * page.pagesize,
+						date);
+			}
 		} else {
 			holders = helper.selectSearchData(keyword, 0, (mPage + 1)
-					* page.pagesize);
+					* page.pagesize, date);
 		}
 		helper.close();
 		for (DynamicListHolder holder : holders) {
 			addHolderData(holder);
 		}
-		L.i(holders.size()+"   "+page.pagesize);
-		pulldownlist.setMore(holders.size() == page.pagesize);
+		L.i(holders.size() + "   " + page.pagesize);
+		pulldownlist.setMore(holders.size() > 0);
 		adapter.notifyDataSetChanged();
+		return holders.size();
 	}
 
 	@SuppressLint("SimpleDateFormat")
@@ -311,11 +393,12 @@ public class DynamicMainActivity extends Activity {
 		data.put("watch_group", holder.getCurrent_team());
 		data.put("Interval_position", "");
 		data.put("station", holder.getDriving_status());
-		data.put("user_id", holder.getUser_id());
+		data.put("user_id", holder.getUser_ids());
 		data.put("isRead", holder.getIsRead());
 		data.put("isFinal", holder.getIsFinal());
 		Datalist.add(data);
 		minId = holder.getId();
+		maxStartTime = holder.getStart_time();
 	}
 
 	private void refreshMoreParolData(String keyword) {
@@ -323,26 +406,78 @@ public class DynamicMainActivity extends Activity {
 		DynamicListHelper helper = new DynamicListHelper(
 				getApplicationContext());
 		ArrayList<DynamicListHolder> holders;
-		if (keyword==null) {
-			holders = helper.selectData(page.curpage* page.pagesize, page.pagesize);
+		if (keyword == null) {
+			if (today.equals(date)) {
+				holders = helper.selectDataOnWay(page.curpage * page.pagesize,
+						page.pagesize, date);
+			} else {
+				holders = helper.selectData(page.curpage * page.pagesize,
+						page.pagesize, date);
+			}
 		} else {
-			holders = helper.selectSearchData(keyword, page.curpage* page.pagesize, page.pagesize);
+			holders = helper.selectSearchData(keyword, page.curpage
+					* page.pagesize, page.pagesize, date);
 		}
 		helper.close();
 		for (DynamicListHolder holder : holders) {
 			addHolderData(holder);
 		}
-		pulldownlist.setMore(holders.size() == page.pagesize);
+		pulldownlist.setMore(holders.size() > 0);
 		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
-		super.onCreateOptionsMenu(menu);
-//		menu.add(100, 1, 1, "录数据");
-//		menu.add(100, 2, 1, "清除缓存数据");
-		return true;
+		menu.add(Menu.NONE, Menu.FIRST + 2, 5, "搜索");
+		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case Menu.FIRST + 2:
+			Intent searchIntent = new Intent(getApplicationContext(),
+					DynamicMainSearchActivity.class);
+			searchIntent.putExtra("date", date);
+			startActivityForResult(searchIntent, Activity.RESULT_OK);
+			break;
+		}
+		return false;
+	}
+	private boolean titleisshow=false;
+	private void toggleTitle(){
+		titleisshow=!titleisshow;
+		title.setVisibility(titleisshow?View.VISIBLE:View.GONE);
+		blue_line.setVisibility(titleisshow?View.GONE:View.VISIBLE);
+		show_btn.setImageResource(titleisshow?R.drawable.btn_top_hide:R.drawable.btn_top_show);
+	}
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.right_btn:
+			callback.filt(true);
+			break;
+		case R.id.goback_btn:
+			callback.filt(false);
+			break;
+		case R.id.show_btn:
+			toggleTitle();
+			break;
+		case R.id.addnew_btn:
+
+			break;
+		case R.id.search_btn:
+			Intent searchIntent = new Intent(getApplicationContext(),
+					DynamicMainSearchActivity.class);
+			searchIntent.putExtra("date", date);
+			startActivityForResult(searchIntent, Activity.RESULT_OK);
+			break;
+
+		default:
+			break;
+		}
+	}
 }

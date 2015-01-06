@@ -5,12 +5,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import com.example.web.image.ImageDownloader;
-import com.xianzhi.tool.web.img.ImageCache;
-import com.xianzhi.tool.web.img.ImageFetcher;
-import com.xianzhi.webtool.HttpJsonTool;
-import com.xianzhisylj.dynamic.R;
-
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.DataSetObserver;
@@ -22,6 +16,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import com.xianzhi.tool.web.img.ImageCache;
+import com.xianzhi.tool.web.img.ImageFetcher;
+import com.xianzhi.webtool.HttpJsonTool;
+import com.xianzhisylj.dynamic.R;
 
 public class GridListAdapter extends SimpleAdapter {
 	// 用于动态的载入一个界面文件

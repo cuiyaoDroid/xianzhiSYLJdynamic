@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/listitem_bg_single"
     android:orientation="horizontal"
-    android:weightSum="3.2"
     android:minHeight="35dp" >
 
     <TextView
@@ -21,10 +20,10 @@
         android:id="@+id/train_code_txt"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
         android:gravity="center"
         android:text="车辆号"
         android:textColor="@color/Black"
+        android:visibility="gone"
         android:textSize="12sp" />
 
     <TextView
@@ -44,6 +43,15 @@
         android:layout_weight="0.8"
         android:gravity="center"
         android:text="定员"
+        android:textColor="@color/Black"
+        android:textSize="12sp" />
+    <TextView
+        android:id="@+id/real_num_txt"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8"
+        android:gravity="center"
+        android:text=""
         android:textColor="@color/Black"
         android:textSize="12sp" />
 	<!--  

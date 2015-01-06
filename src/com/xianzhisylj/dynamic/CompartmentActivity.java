@@ -18,6 +18,7 @@ import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
@@ -37,18 +38,29 @@ import com.xianzhisecuritycheck.main.SecurityCheckApp;
 public class CompartmentActivity extends Activity {
 	private GridView gridview_1;
 	private GridView gridview_2;
+	private GridView gridview_3;
+	private GridView gridview_4;
 	private ArrayList<HashMap<String, Object>> grid1_Data;
 	private SimpleAdapter grid1_Adapter;
 	private ArrayList<HashMap<String, Object>> grid2_Data;
 	private GridSeatListAdapter grid2_Adapter;
+	private ArrayList<HashMap<String, Object>> grid3_Data;
+	private SimpleAdapter grid3_Adapter;
+	private ArrayList<HashMap<String, Object>> grid4_Data;
+	private GridSeatListAdapter grid4_Adapter;
+	
 	private String[] letters = new String[] { "A", "B", "C", "D", "F" };
 	private String[] letters2 = new String[] { "A", "C", "D", "F" };
+	private int[] letters3 = new int[] { 1, 2, 3};
+	private int[] letters4 = new int[] { 1, 3};
 	private TextView titleTxt;
 	private String coach_no;
 	private String trainCode;
 	private String trainDate;
 	private String train_type;
+	private int limit2;
 	private ProgressDialog progreeDialog;
+	private HorizontalScrollView horizontalScrollView1;
 	private void initProgressDialog() {
 		progreeDialog = new ProgressDialog(this);
 		progreeDialog.setTitle("");
@@ -66,34 +78,40 @@ public class CompartmentActivity extends Activity {
 		trainCode = intent.getStringExtra("trainCode");
 		trainDate = intent.getStringExtra("trainDate");
 		train_type = intent.getStringExtra("train_type");
+		limit2 = intent.getIntExtra("limit2",0);
+		
 		initProgressDialog();
 		initCount();
 		grid1_Data = new ArrayList<HashMap<String, Object>>();
 		grid2_Data = new ArrayList<HashMap<String, Object>>();
+		grid3_Data = new ArrayList<HashMap<String, Object>>();
+		grid4_Data = new ArrayList<HashMap<String, Object>>();
 		initContentView();
 		getSeatData();
 	}
 	private void initCount(){
-		if(train_type.equals("YW")){
+		if(train_type.endsWith("YW")){
 			seat_topX=3;
-		}else if(train_type.equals("RW")){
+		}else if(train_type.endsWith("RW")){
 			seat_topX=2;
 		}else{
 			seat_topX=2;
 		}
 		
-		if(train_type.equals("RZ2")){
+		if(train_type.endsWith("RZ2")){
 			seat_bottomX=3;
-		}else if(train_type.equals("RZ1")){
+		}else if(train_type.endsWith("RZ1")){
 			seat_bottomX=2;
 		}else{
 			seat_bottomX=3;
 		}
 		seat_x=seat_topX+seat_bottomX;
-		if(train_type.equals("RZ")||train_type.equals("YZ")){
+		if(train_type.endsWith("RZ")||train_type.endsWith("YZ")){
 			seat_y=120/5;
-		}else if(train_type.equals("YW")){
+		}else if(train_type.endsWith("YW")){
 			seat_y=22;
+		}else if(train_type.endsWith("RW")){
+			seat_y=36;
 		}else{
 			seat_y=19;
 		}
@@ -126,6 +144,8 @@ public class CompartmentActivity extends Activity {
 //					RefreshGroupData();
 					refreshCellToGrid_1();
 					refreshCellToGrid_2();
+					refreshCellToGrid_3();
+					refreshCellToGrid_4();
 					return;
 				}
 			}
@@ -142,44 +162,40 @@ public class CompartmentActivity extends Activity {
 		}
 	}
 	private void initContentView() {
+		horizontalScrollView1 = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
 		gridview_1 = (GridView) findViewById(R.id.gridview_1);
 		gridview_1.setNumColumns(seat_y);
+		
 		int itemWidth = DensityUtil.dip2px(getApplicationContext(), 55)*seat_y;  
+		if(train_type.endsWith("RW")){
+			itemWidth = DensityUtil.dip2px(getApplicationContext(), 55)*seat_y/2;  
+		}
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(  
         		itemWidth, LinearLayout.LayoutParams.WRAP_CONTENT);  
         gridview_1.setLayoutParams(params);  
 		gridview_2 = (GridView) findViewById(R.id.gridview_2);
 		gridview_2.setNumColumns(seat_y);
 		gridview_2.setLayoutParams(params); 
+		gridview_3 = (GridView) findViewById(R.id.gridview_3);
+		gridview_3.setNumColumns(seat_y);
+		gridview_3.setLayoutParams(params); 
+		if(limit2==0){
+			gridview_3.setVisibility(View.GONE);
+		}
+		gridview_4 = (GridView) findViewById(R.id.gridview_4);
+		gridview_4.setNumColumns(seat_y);
+		gridview_4.setLayoutParams(params); 
+		if(limit2==0){
+			gridview_4.setVisibility(View.GONE);
+		}
+		
+		if(train_type.endsWith("RW")){
+			gridview_1.setNumColumns(seat_y/2);
+			gridview_3.setNumColumns(seat_y/2);
+		}
 		titleTxt = (TextView) findViewById(R.id.title_txt);
 		titleTxt.setText("±à×é£º"+coach_no);
 		initGridView();
-	}
-
-	private float startX;
-	private float startY;
-
-	private void OnTouch(MotionEvent event) {
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			startX = event.getX();
-			startY = event.getY();
-			break;
-		case MotionEvent.ACTION_MOVE:
-			break;
-		case MotionEvent.ACTION_UP:
-
-			float pointX = event.getX();
-			float pointY = event.getY();
-
-			if (Math.abs(startX - pointX) > Math.abs(startY - pointY)) {
-				if (pointX - startX > 100) {
-					finish();
-				}
-			}
-		default:
-			break;
-		}
 	}
 
 	@Override
@@ -190,7 +206,7 @@ public class CompartmentActivity extends Activity {
 	}
 
 	private void initGridView() {
-		if(train_type.equals("RW")||train_type.equals("YW")){
+		if(train_type.endsWith("RW")||train_type.endsWith("YW")){
 			grid1_Adapter = new GridBedAdapter(this, grid1_Data,
 					R.layout.cell_compartment, new String[] { "letter" },
 					new int[] { R.id.seat_num });
@@ -199,6 +215,7 @@ public class CompartmentActivity extends Activity {
 					R.layout.cell_compartment, new String[] { "letter" },
 					new int[] { R.id.seat_num });
 		}
+		
 		gridview_1.setAdapter(grid1_Adapter);
 		gridview_1.setOnItemClickListener(new OnItemClickListener() {
 
@@ -213,16 +230,29 @@ public class CompartmentActivity extends Activity {
 				}
 			}
 		});
-		OnTouchListener listener = new OnTouchListener() {
+		if(train_type.endsWith("RW")||train_type.endsWith("YW")){
+			grid3_Adapter = new GridBedAdapter(this, grid3_Data,
+					R.layout.cell_compartment, new String[] { "letter" },
+					new int[] { R.id.seat_num });
+		}else{
+			grid3_Adapter = new GridSeatListAdapter(this, grid3_Data,
+					R.layout.cell_compartment, new String[] { "letter" },
+					new int[] { R.id.seat_num });
+		}
+		gridview_3.setAdapter(grid3_Adapter);
+		gridview_3.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
 				// TODO Auto-generated method stub
-				OnTouch(event);
-				return false;
+				HashMap<String, Object> map = grid3_Data.get(position);
+				String letter=(String) map.get("letter");
+				if ((Boolean) map.get("full")) {
+					initEditTypePopupWindow(arg1, letter);
+				}
 			}
-		};
-		gridview_1.setOnTouchListener(listener);
+		});
 
 		grid2_Adapter = new GridSeatListAdapter(this, grid2_Data,
 				R.layout.cell_compartment, new String[] { "letter" },
@@ -241,13 +271,37 @@ public class CompartmentActivity extends Activity {
 				}
 			}
 		});
-		gridview_2.setOnTouchListener(listener);
+		
+		grid4_Adapter = new GridSeatListAdapter(this, grid4_Data,
+				R.layout.cell_compartment, new String[] { "letter" },
+				new int[] { R.id.seat_num });
+		gridview_4.setAdapter(grid4_Adapter);
+		gridview_4.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				// TODO Auto-generated method stub
+				HashMap<String, Object> map = grid4_Data.get(position);
+				String letter=(String) map.get("letter");
+				if ((Boolean) map.get("full")) {
+					initEditTypePopupWindow(arg1, letter);
+				}
+			}
+		});
+		
+		gridview_1.post(scrollViewRunable);
 	}
 	private int seat_topX=2;
 	private int seat_bottomX=3;
 	private int seat_x=seat_topX+seat_bottomX;
 	private int seat_y=19;
-
+	Runnable scrollViewRunable = new Runnable() {  
+	    @Override  
+	    public void run() {  
+	    	horizontalScrollView1.scrollTo(0, 0);
+	    }  
+	  };  
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
@@ -255,29 +309,43 @@ public class CompartmentActivity extends Activity {
 //		refreshDBData();
 		refreshCellToGrid_1();
 		refreshCellToGrid_2();
+		refreshCellToGrid_3();
+		refreshCellToGrid_4();
 	}
 
 
 	private void refreshCellToGrid_1() {
 		grid1_Data.clear();
 		int start_num=0;
-		Iterator<String> mIterator=hashSet.iterator();
-		if(mIterator.hasNext()){
-			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1));
+		if(limit2>0){
+			start_num+=1000;
 		}
+//		Iterator<String> mIterator=hashSet.iterator();
+//		if(mIterator.hasNext()){
+//			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1));
+//		}
 			
 		for (int i = 0; i < seat_y*seat_topX; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			String letter="";
-			if(train_type.equals("RZ")||train_type.equals("YZ")){
+			if(train_type.endsWith("RZ")||train_type.endsWith("YZ")){
 				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
-			}else if(train_type.equals("RZ2")){
-				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
-			}else if(train_type.equals("RZ1")){
-				letter=String.format("%03d" + letters2[(seat_x-1 - i / seat_y)], (i % seat_y + 1));
-			}else if(train_type.equals("YW")||train_type.equals("RW")||train_type.equals("SYW")||train_type.equals("SRW")){
-				letter=String.format("%04d", (i % seat_y)*seat_topX+(i/seat_y+1)+start_num);
-			}else if(train_type.equals("SRZ")||train_type.equals("SYZ")){
+			}else if(train_type.endsWith("SRZ")||train_type.endsWith("SYZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
+			}else if(train_type.endsWith("RZ2")){
+				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("RZ1")){
+				letter=String.format("%03d" + letters2[(seat_x-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("YW")||train_type.endsWith("SYW")){
+				letter=String.format("%03d"+""+letters3[i/seat_y], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("RW")||train_type.endsWith("SRW")){
+				if(i/seat_y==0&&i%2==1){
+					continue;
+				}else if(i/seat_y==1&&i%2==0){
+					continue;
+				}
+				letter=String.format("%03d"+""+letters4[i/seat_y], (i % seat_y + 1+start_num/10));
+			}else if(train_type.endsWith("SRZ")||train_type.endsWith("SYZ")){
 				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
 			}else {
 				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
@@ -291,25 +359,28 @@ public class CompartmentActivity extends Activity {
 
 	private void refreshCellToGrid_2() {
 		grid2_Data.clear();
-		if(train_type.equals("YW")||train_type.equals("RW")||train_type.equals("SYW")||train_type.equals("SRW")){
+		if(train_type.endsWith("YW")||train_type.endsWith("RW")||train_type.endsWith("SYW")||train_type.endsWith("SRW")){
 			return;
 		}
 		int start_num=0;
-		Iterator<String> mIterator=hashSet.iterator();
-		if(mIterator.hasNext()){
-			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1));
+		if(limit2>0){
+			start_num+=1000;
 		}
+//		Iterator<String> mIterator=hashSet.iterator();
+//		if(mIterator.hasNext()){
+//			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1));
+//		}
 			
 		for (int i = 0; i < seat_y*seat_bottomX; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			String letter="";
-			if(train_type.equals("RZ")||train_type.equals("YZ")){
+			if(train_type.endsWith("RZ")||train_type.endsWith("YZ")){
 				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
-			}else if(train_type.equals("RZ2")){
-				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
-			}else if(train_type.equals("RZ1")){
-				letter=String.format("%03d" + letters2[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1));
-			}else if(train_type.equals("SRZ")||train_type.equals("SYZ")){
+			}else if(train_type.endsWith("RZ2")){
+				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("RZ1")){
+				letter=String.format("%03d" + letters2[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("SRZ")||train_type.endsWith("SYZ")){
 				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
 			}else {
 				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
@@ -321,7 +392,87 @@ public class CompartmentActivity extends Activity {
 		}
 		grid2_Adapter.notifyDataSetChanged();
 	}
-
+	private void refreshCellToGrid_3() {
+		grid3_Data.clear();
+		if(limit2==0){
+			return;
+		}
+		int start_num=0;
+//		Iterator<String> mIterator=hashSet.iterator();
+//		if(mIterator.hasNext()){
+//			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1))+1000;
+//		}
+		if(limit2>0){
+			start_num+=2000;
+		}
+		for (int i = 0; i < seat_y*seat_topX; i++) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			String letter="";
+			if(train_type.endsWith("RZ")||train_type.endsWith("YZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
+			}else if(train_type.endsWith("SRZ")||train_type.endsWith("SYZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
+			}else if(train_type.endsWith("RZ2")){
+				letter=String.format("%03d" + letters[(seat_x-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("RZ1")){
+				letter=String.format("%03d" + letters2[(seat_x-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("YW")||train_type.endsWith("SYW")){
+				letter=String.format("%03d"+""+letters3[i/seat_y], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("RW")||train_type.endsWith("SRW")){
+				if(i/seat_y==0&&i%2==1){
+					continue;
+				}else if(i/seat_y==1&&i%2==0){
+					continue;
+				}
+				letter=String.format("%03d"+""+letters4[i/seat_y], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("SRZ")||train_type.endsWith("SYZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
+			}else {
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+1)+start_num);
+			}
+			map.put("letter",letter);
+			map.put("full", hashSet.contains(letter));
+			grid3_Data.add(map);
+		}
+		grid3_Adapter.notifyDataSetChanged();
+	}
+	private void refreshCellToGrid_4() {
+		grid4_Data.clear();
+		if(limit2==0){
+			return;
+		}
+		if(train_type.endsWith("YW")||train_type.endsWith("RW")||train_type.endsWith("SYW")||train_type.endsWith("SRW")){
+			return;
+		}
+		int start_num=0;
+		//Iterator<String> mIterator=hashSet.iterator();
+//		if(mIterator.hasNext()){
+//			start_num=1000*Integer.parseInt(mIterator.next().substring(0, 1))+1000;
+//		}
+		if(limit2>0){
+			start_num+=2000;
+		}
+		for (int i = 0; i < seat_y*seat_bottomX; i++) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			String letter="";
+			if(train_type.endsWith("RZ")||train_type.endsWith("YZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
+			}else if(train_type.endsWith("RZ2")){
+				letter=String.format("%03d" + letters[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("RZ1")){
+				letter=String.format("%03d" + letters2[(seat_bottomX-1 - i / seat_y)], (i % seat_y + 1)+start_num/10);
+			}else if(train_type.endsWith("SRZ")||train_type.endsWith("SYZ")){
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
+			}else {
+				letter=String.format("%04d", (i % seat_y)*5+(i/seat_y+seat_topX+1)+start_num);
+			}
+			
+			map.put("letter",letter);
+			map.put("full", hashSet.contains(letter));
+			grid4_Data.add(map);
+		}
+		grid4_Adapter.notifyDataSetChanged();
+	}
 	private PopupWindow EditTypePop = null;
 
 	private void initEditTypePopupWindow(View view,
@@ -334,7 +485,7 @@ public class CompartmentActivity extends Activity {
 		String content="";
 		int i=0;
 		for(SeatInfoHolder holder:holders){
-			content+=holder.toString()+((i==holders.size()-1)?"":"\r\n");
+			content+=holder.toString()+((i==holders.size()-1)?"":"\r\n----------------------------------------\r\n");
 			i++;
 		}
 		TextView content_txt = (TextView) popunwindwow.findViewById(R.id.content_txt);

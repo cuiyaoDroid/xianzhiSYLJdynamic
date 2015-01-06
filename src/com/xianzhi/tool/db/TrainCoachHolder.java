@@ -5,21 +5,50 @@ public class TrainCoachHolder {
 	private String train_no;
 	private String coach_type;
 	private int limit1;
+	private int limit2;
 	private String trainDate;
 	private String trainCode;
 	private int train_id;
-
+	private int passenger;
+	private int actual;
 	public TrainCoachHolder(String coach_no, String train_no,
-			String coach_type, int limit1, String trainDate, String trainCode,
-			int train_id) {
+			String coach_type, int limit1,int limit2, String trainDate, String trainCode,
+			int train_id,int passenger,int actual) {
 		super();
 		this.coach_no = coach_no;
 		this.train_no = train_no;
 		this.coach_type = coach_type;
 		this.limit1 = limit1;
+		this.limit2 = limit2;
 		this.trainDate = trainDate;
 		this.trainCode = trainCode;
 		this.train_id = train_id;
+		this.passenger=passenger;
+		this.actual=actual;
+	}
+
+	public int getActual() {
+		return actual;
+	}
+
+	public void setActual(int actual) {
+		this.actual = actual;
+	}
+
+	public int getLimit2() {
+		return limit2;
+	}
+
+	public void setLimit2(int limit2) {
+		this.limit2 = limit2;
+	}
+
+	public int getPassenger() {
+		return passenger;
+	}
+
+	public void setPassenger(int passenger) {
+		this.passenger = passenger;
 	}
 
 	public int getTrain_id() {

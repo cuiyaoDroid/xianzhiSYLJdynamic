@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="@drawable/bg_group_title"
-        android:orientation="horizontal"
-        android:weightSum="3.2" >
+        android:orientation="horizontal" >
 
         <TextView
             android:layout_width="0dp"
@@ -28,6 +27,7 @@
             android:gravity="center"
             android:text="车辆号"
             android:textColor="@color/text_gray"
+            android:visibility="gone"
             android:textSize="12sp" />
 
         <TextView
@@ -45,6 +45,14 @@
             android:layout_weight="0.8"
             android:gravity="center"
             android:text="定员"
+            android:textColor="@color/text_gray"
+            android:textSize="12sp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:text="乘客数"
             android:textColor="@color/text_gray"
             android:textSize="12sp" />
 

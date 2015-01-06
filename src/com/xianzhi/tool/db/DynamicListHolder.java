@@ -8,7 +8,7 @@ public class DynamicListHolder {
 	private String to_station_name;
 	private String current_team;
 	private int driving_status;
-	private int user_id;
+	private String user_ids;
 	private String job_number;
 	private String user_name;
 	private String photo;
@@ -20,12 +20,13 @@ public class DynamicListHolder {
 	private String team_length;
 	private int isFinal;
 	private int isRead;
+	private String date;
 	public DynamicListHolder(int id, String board_train_code, long start_time,
 			String from_station_name, String to_station_name,
-			String current_team, int driving_status, int user_id,
+			String current_team, int driving_status, String user_ids,
 			String job_number, String user_name, String photo, String phone,
 			int department_id, String department_name, int position_id,
-			String position_name, String team_length,int isFinal,int isRead) {
+			String position_name, String team_length,int isFinal,int isRead,String date) {
 		super();
 		this.id = id;
 		this.board_train_code = board_train_code;
@@ -34,7 +35,7 @@ public class DynamicListHolder {
 		this.to_station_name = to_station_name;
 		this.current_team = current_team;
 		this.driving_status = driving_status;
-		this.user_id = user_id;
+		this.user_ids = user_ids;
 		this.job_number = job_number;
 		this.user_name = user_name;
 		this.photo = photo;
@@ -46,8 +47,17 @@ public class DynamicListHolder {
 		this.team_length = team_length;
 		this.isFinal=isFinal;
 		this.isRead=isRead;
+		this.date=date;
 	}
 	
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public int getIsRead() {
 		return isRead;
 	}
@@ -120,12 +130,12 @@ public class DynamicListHolder {
 		this.driving_status = driving_status;
 	}
 
-	public int getUser_id() {
-		return user_id;
+	public String getUser_ids() {
+		return user_ids;
 	}
 
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
+	public void setUser_ids(String user_ids) {
+		this.user_ids = user_ids;
 	}
 
 	public String getJob_number() {

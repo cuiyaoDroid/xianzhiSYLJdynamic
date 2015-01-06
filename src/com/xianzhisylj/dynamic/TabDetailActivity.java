@@ -8,16 +8,20 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
@@ -44,49 +48,65 @@ public class TabDetailActivity extends TabActivity {
 	private LinearLayout train_info_layout;
 	public static String mTextviewArray[] = { "车次信息", "编组情况", "重点工作", "乘务记录",
 			"提交报告", "审阅记录" };
-	private boolean ismySelf=false;
+	private boolean ismySelf = false;
 	@SuppressWarnings("rawtypes")
 	private ProgressBar progressBar;
 	private Class mTabClassArray[];
-	int isRead=0;
+	private HorizontalScrollView horizontalScrollView;
+	int isRead = 0;
+	int status;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_detail_tab);
 		train_info_layout = (LinearLayout) findViewById(R.id.train_info_layout);
-		progressBar =  (ProgressBar) findViewById(R.id.progressBar);
+		horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		train_id = getIntent().getIntExtra("id", -1);
-		user_id = getIntent().getIntExtra("user_id", -1);
-		ismySelf=user_id==HttpJsonTool.userId;
+		user_ids = getIntent().getStringExtra("user_id");
+		String users[]=user_ids.trim().split(",");
+		ismySelf=false;
+		for(int i=0;i<users.length;i++){
+			if(users[i].length()==0){
+				continue;
+			}
+			if(String.valueOf(HttpJsonTool.userId).equals(users[i])){
+				ismySelf=true;
+				break;
+			}
+		}
 		isRead = getIntent().getIntExtra("isRead", -1);
 		isFinal = getIntent().getIntExtra("isFinal", -1);
+		status = getIntent().getIntExtra("status", 5);
 		if (train_id == -1) {
 			return;
 		}
-		HttpJsonTool.train_id=train_id;
-		if(isRead!=1&&!ismySelf&&HttpJsonTool.reviewTrain==1){
+		HttpJsonTool.train_id = train_id;
+		if (isRead != 1 && !ismySelf && HttpJsonTool.reviewTrain == 1) {
 			sendReview();
 		}
 		refreshTrainInfo();
 		getTrainDynamic();
 		init();
 	}
-	
-	private void getTrainDynamic(){
+
+	private void getTrainDynamic() {
 		progressBar.setVisibility(View.VISIBLE);
-		AsyncTask<Void, Void, String> task =new AsyncTask<Void, Void, String>() {
+		AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
 
 			@Override
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
-				return HttpJsonTool.getInstance().getTrainDynamic(getApplicationContext(), train_id);
+				return HttpJsonTool.getInstance().getTrainDynamic(
+						getApplicationContext(), train_id);
 			}
+
 			@Override
 			protected void onPostExecute(String result) {
 				// TODO Auto-generated method stub
 				super.onPostExecute(result);
 				progressBar.setVisibility(View.GONE);
-				if(result==null){
+				if (result == null) {
 					return;
 				}
 				if (result.startsWith(HttpJsonTool.ERROR)) {
@@ -101,27 +121,30 @@ public class TabDetailActivity extends TabActivity {
 		};
 		task.execute();
 	}
-	private void sendReview(){
-		AsyncTask<Void, Void, String> task =new AsyncTask<Void, Void, String>() {
+
+	private void sendReview() {
+		AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
 
 			@Override
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
-				
-				ReviewHolder holder=new ReviewHolder(-1, train_id, HttpJsonTool.userId
-						, "", "", "", ""
-						, "", 1, 1, -1);
-				return HttpJsonTool.getInstance().saveReview(getApplicationContext(), holder);
+
+				ReviewHolder holder = new ReviewHolder(-1, train_id,
+						HttpJsonTool.userId, "", "", "", "", "", 1, 1, -1);
+				return HttpJsonTool.getInstance().saveReview(
+						getApplicationContext(), holder);
 			}
+
 			@Override
 			protected void onPostExecute(String result) {
 				// TODO Auto-generated method stub
 				super.onPostExecute(result);
-				if(result==null){
+				if (result == null) {
 					return;
 				}
-				if(result.startsWith(HttpJsonTool.SUCCESS)){
-					DynamicListHelper helper=new DynamicListHelper(getApplicationContext());
+				if (result.startsWith(HttpJsonTool.SUCCESS)) {
+					DynamicListHelper helper = new DynamicListHelper(
+							getApplicationContext());
 					helper.setRead(train_id);
 					helper.close();
 				}
@@ -129,34 +152,39 @@ public class TabDetailActivity extends TabActivity {
 		};
 		task.execute();
 	}
+
 	private int train_id;
-	private int user_id=-1;
-	private int isFinal=-1;
+	private String user_ids="";
+	private int isFinal = -1;
+
 	private void refreshTrainInfo() {
-		
-		if(ismySelf&&isFinal==0){
-			mTabClassArray = new Class[]{ TrainInfoActivity.class,
+
+		if (ismySelf && isFinal == 0) {
+			mTabClassArray = new Class[] { TrainInfoActivity.class,
 					GroupInfoActivity.class,
 					ImportWorkEditActivity.class,// ImportWorkInfoActivity.class,
 					NoteEditActivity.class, commitActivity.class,
 					ReviewInfoActivity.class };
 			findViewById(R.id.RadioButton4).setVisibility(View.VISIBLE);
-		}else{
-			mTabClassArray = new Class[]{ TrainInfoActivity.class,
-					GroupInfoActivity.class,
-					ImportWorkInfoActivity.class,
+		} else {
+			mTabClassArray = new Class[] { TrainInfoActivity.class,
+					GroupInfoActivity.class, ImportWorkInfoActivity.class,
 					NoteInfoActivity.class, commitActivity.class,
 					ReviewInfoActivity.class };
 			findViewById(R.id.RadioButton4).setVisibility(View.GONE);
 		}
 	}
-	private void refreshTrainDynamic(){
+	int mid;
+	private void refreshTrainDynamic() {
 		train_info_layout.removeAllViews();
-		TrainDynamicHelper helper=new TrainDynamicHelper(getApplicationContext());
-		ArrayList<TrainDynamicHolder> holders=helper.selectDataTrainId(train_id);
+		TrainDynamicHelper helper = new TrainDynamicHelper(
+				getApplicationContext());
+		final ArrayList<TrainDynamicHolder> holders = helper
+				.selectDataTrainId(train_id);
 		helper.close();
-		int i=0;
-		for(TrainDynamicHolder holder:holders){
+		int i = 0;
+		mid=0;
+		for (TrainDynamicHolder holder : holders) {
 			View cell;
 			TextView time_txt;
 			TextView locatetxt;
@@ -166,7 +194,7 @@ public class TabDetailActivity extends TabActivity {
 						null);
 				time_txt = (TextView) cell.findViewById(R.id.time_txt);
 				locatetxt = (TextView) cell.findViewById(R.id.locate_txt);
-				if (holder.getPASSED()==1||holder.getCUR()==1) {
+				if (holder.getPASSED() == 1 || holder.getCUR() == 1) {
 					time_txt.setTextColor(Color.GREEN);
 					locatetxt.setTextColor(Color.GREEN);
 				}
@@ -175,22 +203,41 @@ public class TabDetailActivity extends TabActivity {
 						null);
 				time_txt = (TextView) cell.findViewById(R.id.time_txt);
 				locatetxt = (TextView) cell.findViewById(R.id.locate_txt);
-				if (holder.getPASSED()==1||holder.getCUR()==1) {
+				if (holder.getPASSED() == 1 || holder.getCUR() == 1) {
 					time_txt.setTextColor(Color.GREEN);
 					locatetxt.setTextColor(Color.GREEN);
+					if (holder.getCUR()==1) {
+						mid=i;
+					}
 				}
 			} else {
 				cell = getLayoutInflater().inflate(R.layout.cell_train_middle,
 						null);
 				time_txt = (TextView) cell.findViewById(R.id.time_txt);
 				locatetxt = (TextView) cell.findViewById(R.id.locate_txt);
-				if (holder.getPASSED()==1||holder.getCUR()==1) {
+				if (holder.getPASSED() == 1 || holder.getCUR() == 1) {
 					time_txt.setTextColor(Color.GREEN);
 					locatetxt.setTextColor(Color.GREEN);
-					if (holder.getCUR()==1) {
+					if (holder.getCUR() == 1) {
 						ImageView tran = (ImageView) cell
 								.findViewById(R.id.train_icon);
 						tran.setVisibility(View.VISIBLE);
+						RelativeLayout.LayoutParams layoutParams = (LayoutParams) tran.getLayoutParams();
+						switch (status) {
+						case 3:
+							layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,0);
+							layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT,RelativeLayout.TRUE); 
+							tran.setLayoutParams(layoutParams);
+							break;
+						case 4:
+							layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,0);
+							layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,RelativeLayout.TRUE); 
+							tran.setLayoutParams(layoutParams);
+							break;
+						default:
+							break;
+						}
+						mid=i;
 					}
 				}
 
@@ -200,8 +247,21 @@ public class TabDetailActivity extends TabActivity {
 			train_info_layout.addView(cell);
 			i++;
 		}
-		
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if(holders.size()==0){
+					return;
+				}
+				horizontalScrollView.smoothScrollTo(
+						mid * train_info_layout.getWidth() / holders.size(), 0);
+			}
+		}, 200);
+
 	}
+
 	int currentTab;
 
 	private void init() {
@@ -225,29 +285,23 @@ public class TabDetailActivity extends TabActivity {
 				currentTab = m_tabHost.getCurrentTab();
 				switch (checkedId) {
 				case R.id.RadioButton0:
-					setCurrentTabWithAnim(currentTab, 0,
-							mTextviewArray[0]);
+					setCurrentTabWithAnim(currentTab, 0, mTextviewArray[0]);
 
 					break;
 				case R.id.RadioButton1:
-					setCurrentTabWithAnim(currentTab, 1,
-							mTextviewArray[1]);
+					setCurrentTabWithAnim(currentTab, 1, mTextviewArray[1]);
 					break;
 				case R.id.RadioButton2:
-					setCurrentTabWithAnim(currentTab, 2,
-							mTextviewArray[2]);
+					setCurrentTabWithAnim(currentTab, 2, mTextviewArray[2]);
 					break;
 				case R.id.RadioButton3:
-					setCurrentTabWithAnim(currentTab, 3,
-							mTextviewArray[3]);
+					setCurrentTabWithAnim(currentTab, 3, mTextviewArray[3]);
 					break;
 				case R.id.RadioButton4:
-					setCurrentTabWithAnim(currentTab, 4,
-							mTextviewArray[4]);
+					setCurrentTabWithAnim(currentTab, 4, mTextviewArray[4]);
 					break;
 				case R.id.RadioButton5:
-					setCurrentTabWithAnim(currentTab, 5,
-							mTextviewArray[5]);
+					setCurrentTabWithAnim(currentTab, 5, mTextviewArray[5]);
 					break;
 				}
 			}
@@ -278,6 +332,7 @@ public class TabDetailActivity extends TabActivity {
 		Intent intent = new Intent(this, mTabClassArray[index]);
 		intent.putExtra("id", id);
 		intent.putExtra("ismySelf", ismySelf);
+		intent.putExtra("isfinal", isFinal);
 		Log.i("TabDetailActivity", "Intent");
 		return intent;
 	}

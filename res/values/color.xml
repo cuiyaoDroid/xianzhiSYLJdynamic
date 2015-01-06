@@ -8,6 +8,7 @@
     <color name="translucency">#e0000000</color>
     <color name="black">#000000</color>
     <color name="seat_text">#6E9FDF</color>
+    <color name="seat_text_full">#000066</color>
     <!-- <color name="red">#bf242a</color> -->
     <color name="transparent">#00000000</color>
     <color name="light_orange">#fcb75c</color>
@@ -45,7 +46,8 @@
 	<color name="txt_red">#AA0BE5</color>
 	<color name="txt_green">#108900</color>
 	<color name="txt_blue">#006AE2</color>
-	
+	<color name="txt_gray">#9315d8</color>
+	<color name="txt_darkgreen">#5c5d5f</color>
      <!-- 字体颜色 -->
     <!-- 灰色、很淡 -->
     <color name="YST_F_GRAY_A">#909090</color>

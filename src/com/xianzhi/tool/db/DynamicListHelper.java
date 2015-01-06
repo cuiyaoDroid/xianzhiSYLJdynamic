@@ -28,6 +28,7 @@ public class DynamicListHelper extends DBHelper {
 	public final static String team_length = "team_length";
 	public final static String isFinal = "isFinal";
 	public final static String isRead = "isRead";
+	public final static String date = "date";
 	public DynamicListHelper(Context context) {
 		super(context);
 	}
@@ -45,10 +46,11 @@ public class DynamicListHelper extends DBHelper {
 				+ " VARCHAR, " + start_time + " LONG, " + from_station_name
 				+ " VARCHAR, " + to_station_name + " VARCHAR, " + current_team
 				+ " VARCHAR, " + driving_status + " integer, " + user_id
-				+ " integer, " + job_number + " VARCHAR, " + user_name
+				+ " VARCHAR, " + job_number + " VARCHAR, " + user_name
 				+ " VARCHAR, " + photo + " VARCHAR, " + phone + " VARCHAR, "
 				+ department_id + " integer, " + department_name + " VARCHAR, "
 				+ position_id + " integer, " 
+				+ date + " VARCHAR, " 
 				+ position_name + " VARCHAR, "
 				+ isFinal + " integer, "
 				+ isRead + " integer, "
@@ -69,7 +71,7 @@ public class DynamicListHelper extends DBHelper {
 		cv.put(to_station_name, content.getTo_station_name());
 		cv.put(current_team, content.getCurrent_team());
 		cv.put(driving_status, content.getDriving_status());
-		cv.put(user_id, content.getUser_id());
+		cv.put(user_id, content.getUser_ids());
 		cv.put(job_number, content.getJob_number());
 		cv.put(user_name, content.getUser_name());
 		cv.put(photo, content.getPhoto());
@@ -80,6 +82,7 @@ public class DynamicListHelper extends DBHelper {
 		cv.put(position_name, content.getPosition_name());
 		cv.put(isFinal, content.getIsFinal());
 		cv.put(isRead, read);
+		cv.put(date, content.getDate());
 		return db.replace(TABLE_NAME, null, cv);
 	}
 
@@ -91,7 +94,7 @@ public class DynamicListHelper extends DBHelper {
 		int to_station_name_column = cursor.getColumnIndex(to_station_name);
 		int current_team_column = cursor.getColumnIndex(current_team);
 		int driving_status_column = cursor.getColumnIndex(driving_status);
-		int user_id_column = cursor.getColumnIndex(user_id);
+		int user_ids_column = cursor.getColumnIndex(user_id);
 		int job_number_column = cursor.getColumnIndex(job_number);
 		int user_name_column = cursor.getColumnIndex(user_name);
 		int photo_column = cursor.getColumnIndex(photo);
@@ -102,6 +105,7 @@ public class DynamicListHelper extends DBHelper {
 		int position_name_column = cursor.getColumnIndex(position_name);
 		int isFinal_column = cursor.getColumnIndex(isFinal);
 		int isRead_column = cursor.getColumnIndex(isRead);
+		int date_column = cursor.getColumnIndex(date);
 
 		int id = cursor.getInt(id_column);
 		String board_train_code = cursor.getString(board_train_code_column);
@@ -110,7 +114,7 @@ public class DynamicListHelper extends DBHelper {
 		String to_station_name = cursor.getString(to_station_name_column);
 		String current_team = cursor.getString(current_team_column);
 		int driving_status = cursor.getInt(driving_status_column);
-		int user_id = cursor.getInt(user_id_column);
+		String user_ids = cursor.getString(user_ids_column);
 		String job_number = cursor.getString(job_number_column);
 		String user_name = cursor.getString(user_name_column);
 		String photo = cursor.getString(photo_column);
@@ -121,18 +125,43 @@ public class DynamicListHelper extends DBHelper {
 		String position_name = cursor.getString(position_name_column);
 		int isFinal = cursor.getInt(isFinal_column);
 		int isRead = cursor.getInt(isRead_column);
+		String date = cursor.getString(date_column);
 		DynamicListHolder holder = new DynamicListHolder(id, board_train_code,
 				start_time, from_station_name, to_station_name, current_team,
-				driving_status, user_id, job_number, user_name, photo, phone,
+				driving_status, user_ids, job_number, user_name, photo, phone,
 				department_id, department_name, position_id, position_name,
-				position_name,isFinal,isRead);
+				position_name,isFinal,isRead,date);
 		return holder;
 	}
 
-	public ArrayList<DynamicListHolder> selectData(int from, int pagesize) {
+	public ArrayList<DynamicListHolder> selectData(int from, int pagesize,String str_date) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, ID
+		Cursor cursor;
+		if(str_date==null){
+			cursor = db.query(TABLE_NAME, null, date+"=?", new String[]{str_date}, null, null, start_time
+					+ " desc limit " + from + "," + pagesize);
+		}else{
+			cursor = db.query(TABLE_NAME, null, date+"=?", new String[]{str_date}, null, null, start_time
 				+ " desc limit " + from + "," + pagesize);
+		}
+		ArrayList<DynamicListHolder> holderlist = new ArrayList<DynamicListHolder>();
+		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+			DynamicListHolder holder = getDataCursor(cursor);
+			holderlist.add(holder);
+		}
+		cursor.close();
+		return holderlist;
+	}
+	public ArrayList<DynamicListHolder> selectDataOnWay(int from, int pagesize,String str_date) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor;
+		if(str_date!=null){
+			cursor = db.query(TABLE_NAME, null, driving_status+"<>1 AND "+driving_status+"<>2 AND "+ date+"="+str_date, null, null, null, start_time
+						+ " desc limit " + from + "," + pagesize);
+		}else{
+			cursor = db.query(TABLE_NAME, null, driving_status+"<>1 AND "+driving_status+"<>2", null, null, null, start_time
+					+ " desc limit " + from + "," + pagesize);
+		}
 		ArrayList<DynamicListHolder> holderlist = new ArrayList<DynamicListHolder>();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			DynamicListHolder holder = getDataCursor(cursor);
@@ -161,10 +190,19 @@ public class DynamicListHelper extends DBHelper {
 			return db.update(TABLE_NAME,cv,null, null);
 		}
 	}
-	public ArrayList<DynamicListHolder> selectSearchData(String train_Code,int from, int pagesize) {
+	public ArrayList<DynamicListHolder> selectSearchData(String train_Code
+			,int from, int pagesize,String str_date) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_NAME, null, board_train_code + " like '%"
-				+ train_Code + "%'", null, null, null, ID + " desc limit " + from + "," + pagesize);
+		Cursor cursor;
+		if(str_date==null){
+			cursor = db.query(TABLE_NAME, null, board_train_code + " like '%"
+					+ train_Code + "%'", null, null, null
+					, ID + " desc limit " + from + "," + pagesize);
+		}else{
+			cursor = db.query(TABLE_NAME, null, board_train_code + " like '%"
+				+ train_Code + "%' AND "+date+"="+str_date
+				, null, null, null, ID + " desc limit " + from + "," + pagesize);
+		}
 		ArrayList<DynamicListHolder> holderlist = new ArrayList<DynamicListHolder>();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			DynamicListHolder holder = getDataCursor(cursor);
@@ -173,7 +211,18 @@ public class DynamicListHelper extends DBHelper {
 		cursor.close();
 		return holderlist;
 	}
-
+	public ArrayList<DynamicListHolder> selectSearch_date(String date) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_NAME, null, start_time + " like '%"
+				+ date + "%'", null, null, null, ID + " desc");
+		ArrayList<DynamicListHolder> holderlist = new ArrayList<DynamicListHolder>();
+		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+			DynamicListHolder holder = getDataCursor(cursor);
+			holderlist.add(holder);
+		}
+		cursor.close();
+		return holderlist;
+	}
 	public int delete_id(int id) {
 		synchronized (lock.Lock) {
 			SQLiteDatabase db = getWritableDatabase();
@@ -193,7 +242,6 @@ public class DynamicListHelper extends DBHelper {
 		cursor.close();
 		return holder;
 	}
-
 	public void clear() {
 		synchronized (lock.Lock) {
 			SQLiteDatabase db = this.getReadableDatabase();

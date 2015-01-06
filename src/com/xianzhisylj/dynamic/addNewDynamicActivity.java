@@ -47,7 +47,7 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 	}
 
 	private String curtime="";
-
+	private String date="";
 	@SuppressLint("SimpleDateFormat")
 	@Override
 	public void onClick(View v) {
@@ -63,7 +63,10 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 					// TODO Auto-generated method stub
 					SimpleDateFormat format = new SimpleDateFormat(
 							"yyyy-MM-dd HH:mm:ss");
+					SimpleDateFormat format2 = new SimpleDateFormat(
+							"yyyyMMdd");
 					curtime=format.format(time);
+					date=format2.format(time);
 					data_edit.setText(curtime);
 				}
 			});
@@ -100,7 +103,7 @@ public class addNewDynamicActivity extends Activity implements OnClickListener {
 			protected String doInBackground(Void... params) {
 				// TODO Auto-generated method stub
 				return HttpJsonTool.getInstance().addNewDynamicTrain(getApplicationContext()
-						, str_code, curtime, str_team, str_team_length);
+						, str_code, curtime, str_team, str_team_length,date);
 			}
 			@Override
 			protected void onPostExecute(String result) {

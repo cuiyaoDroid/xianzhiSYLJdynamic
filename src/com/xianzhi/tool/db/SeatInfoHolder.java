@@ -214,9 +214,9 @@ public class SeatInfoHolder {
 //				+ train_date + "\r\n窗口号：" + window_no + "\r\n车票价格："
 //				+ ticket_price + "\r\n票号：" + ticket_no + "\r\n全车辆号：" + train_no 
 //				+ "\r\n----------------------------------------";
-		return "行程：" + from_station_name
-		+ "--"+ to_station_name +"\r\n票价："
-		+ ticket_price + "\r\n票号：" + ticket_no +"\r\n----------------------------------------";
+		return "票详情：" + from_station_name
+		+ "--"+ to_station_name +"  "
+		+ ticket_price + "\r\n票号：" + ticket_no;
 	}
 
 }

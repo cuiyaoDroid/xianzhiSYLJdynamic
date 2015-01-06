@@ -37,12 +37,12 @@ public class DynamicAdapter extends SimpleAdapter {
 		int color;
 		switch (state) {
 		case 1:
-			color = context.getResources().getColor(R.color.txt_blue); 
+			color = context.getResources().getColor(R.color.txt_gray); 
 			state_txt.setTextColor(color);
 			state_txt.setText("待发");
 			break;
 		case 2:
-			color = context.getResources().getColor(R.color.txt_blue); 
+			color = context.getResources().getColor(R.color.txt_darkgreen); 
 			state_txt.setTextColor(color);
 			state_txt.setText("到达");
 			break;
@@ -52,7 +52,7 @@ public class DynamicAdapter extends SimpleAdapter {
 			state_txt.setText("晚点");
 			break;
 		case 4:
-			color = context.getResources().getColor(R.color.txt_green); 
+			color = context.getResources().getColor(R.color.txt_blue); 
 			state_txt.setTextColor(color);
 			state_txt.setText("提前");
 			break;

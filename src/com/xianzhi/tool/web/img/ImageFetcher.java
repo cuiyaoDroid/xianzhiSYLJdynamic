@@ -25,6 +25,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AbstractHttpClient;
+
+import com.xianzhi.webtool.HttpJsonTool;
+import com.xianzhi.webtool.HttpsClient;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -96,7 +100,10 @@ public class ImageFetcher extends ImageResizer {
     private Bitmap processBitmap(String url) {
         Bitmap bitmap = null;
         // AndroidHttpClient is not allowed to be used from the main thread
-        final HttpClient client =AndroidHttpClient.newInstance("Android");
+        final HttpClient client = HttpsClient.getInstance().getHttpsClient();
+        if (HttpJsonTool.cookieInfo != null) {
+			((AbstractHttpClient) client).setCookieStore(HttpJsonTool.cookieInfo);
+		}
         final HttpGet getRequest = new HttpGet(url);
 
         try {

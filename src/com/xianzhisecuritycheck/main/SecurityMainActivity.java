@@ -167,7 +167,7 @@ public class SecurityMainActivity extends Activity implements OnClickListener {
 		for (PatrolHolder holder : holders) {
 			addParolData(holder);
 		}
-		pulldownlist.setMore(holders.size() == page.pagesize);
+		pulldownlist.setMore(holders.size() >0);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -196,7 +196,7 @@ public class SecurityMainActivity extends Activity implements OnClickListener {
 		for (PatrolHolder holder : holders) {
 			addParolData(holder);
 		}
-		pulldownlist.setMore(holders.size() == page.pagesize);
+		pulldownlist.setMore(holders.size() >0);
 		adapter.notifyDataSetChanged();
 	}
 

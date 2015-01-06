@@ -14,10 +14,13 @@ public class TrainCoachHelper extends DBHelper {
 	public final static String TRAIN_NO = "train_no";
 	public final static String COACH_TYPE = "coach_type";
 	public final static String LIMIT1 = "limit1";
+	public final static String LIMIT2 = "limit2";
 	public final static String TRAINDATE = "trainDate";
 	public final static String TRAINCODE = "trainCode";
 	public final static String TRAIN_ID = "train_id";
-
+	public final static String PASSENGER_NUM = "passenger_num";
+	public final static String ACTUAL = "actual";
+	
 	public TrainCoachHelper(Context context) {
 		super(context);
 	}
@@ -33,9 +36,15 @@ public class TrainCoachHelper extends DBHelper {
 		String sql = "Create table IF NOT EXISTS " + TABLE_NAME + "(" + ID
 				+ " integer primary key autoincrement, " + COACH_NO
 				+ " VARCHAR, " + TRAIN_NO + " VARCHAR, " + COACH_TYPE
-				+ " VARCHAR, " + LIMIT1 + " integer, " + TRAINDATE
-				+ " VARCHAR, " + TRAIN_ID + " integer, " + TRAINCODE
-				+ " VARCHAR" + ");";
+				+ " VARCHAR, "
+				+ LIMIT1 + " integer, "
+				+ LIMIT2 + " integer, "
+				+ ACTUAL + " integer, "
+				+ TRAINDATE
+				+ " VARCHAR, " 
+				+ TRAIN_ID + " integer, " 
+				+ PASSENGER_NUM + " integer, " 
+				+ TRAINCODE + " VARCHAR" + ");";
 		return sql;
 	}
 
@@ -45,9 +54,12 @@ public class TrainCoachHelper extends DBHelper {
 		cv.put(TRAIN_NO, content.getTrain_no());
 		cv.put(COACH_TYPE, content.getCoach_type());
 		cv.put(LIMIT1, content.getLimit1());
+		cv.put(LIMIT2, content.getLimit2());
 		cv.put(TRAINDATE, content.getTrainDate());
 		cv.put(TRAINCODE, content.getTrainCode());
 		cv.put(TRAIN_ID, content.getTrain_id());
+		cv.put(PASSENGER_NUM, content.getPassenger());
+		cv.put(ACTUAL, content.getActual());
 		return db.replace(TABLE_NAME, null, cv);
 	}
 
@@ -56,20 +68,26 @@ public class TrainCoachHelper extends DBHelper {
 		int train_no_column = cursor.getColumnIndex(TRAIN_NO);
 		int coach_type_column = cursor.getColumnIndex(COACH_TYPE);
 		int limit1_column = cursor.getColumnIndex(LIMIT1);
+		int limit2_column = cursor.getColumnIndex(LIMIT2);
 		int trainDate_column = cursor.getColumnIndex(TRAINDATE);
 		int trainCode_column = cursor.getColumnIndex(TRAINCODE);
 		int train_id_column = cursor.getColumnIndex(TRAIN_ID);
+		int passenger_num_column = cursor.getColumnIndex(PASSENGER_NUM);
+		int actual_column = cursor.getColumnIndex(ACTUAL);
 
 		String coach_no = cursor.getString(coach_no_column);
 		String train_no = cursor.getString(train_no_column);
 		String coach_type = cursor.getString(coach_type_column);
 		int limit1 = cursor.getInt(limit1_column);
+		int limit2 = cursor.getInt(limit2_column);
 		String trainDate = cursor.getString(trainDate_column);
 		String trainCode = cursor.getString(trainCode_column);
 		int train_id = cursor.getInt(train_id_column);
+		int passenger_num = cursor.getInt(passenger_num_column);
+		int actual = cursor.getInt(actual_column);
 
 		TrainCoachHolder holder = new TrainCoachHolder(coach_no, train_no,
-				coach_type, limit1, trainDate, trainCode, train_id);
+				coach_type, limit1,limit2, trainDate, trainCode, train_id,passenger_num,actual);
 
 		return holder;
 	}

@@ -58,6 +58,8 @@ import com.xianzhi.tool.db.TrainCoachHelper;
 import com.xianzhi.tool.db.TrainCoachHolder;
 import com.xianzhi.tool.db.TrainDynamicHelper;
 import com.xianzhi.tool.db.TrainDynamicHolder;
+import com.xianzhi.tool.db.UserHelper;
+import com.xianzhi.tool.db.UserHolder;
 import com.xianzhi.tool.db.lock;
 import com.xianzhi.webtool.MyMultipartEntity.ProgressListener;
 import com.xianzhisecuritycheck.main.SecurityCheckApp;
@@ -69,8 +71,8 @@ public class HttpJsonTool {
 	};
 
 //	public static final String ServerUrl = "http://v.cc-railway.xzh-soft.com:8082/dynamic";
-	// public static final String ServerUrl = "http://192.168.1.107:8080";
-	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic/";
+//	 public static final String ServerUrl = "http://115.28.4.107:8079";
+	public static final String ServerUrl ="https://eaccess.syrailway.cn:8443/mapping/sjznbg/dynamic";
 	// "https://eaccess.syrailway.cn:8443/mapping/sjznbg";
 	private static HttpJsonTool httpjsontool = null;
 	public static String username = "";
@@ -89,7 +91,7 @@ public class HttpJsonTool {
 		return httpjsontool;
 	}
 
-	private static CookieStore cookieInfo = null;
+	public static CookieStore cookieInfo = null;
 
 	public void getCookieInfo() {
 		Thread th = new Thread() {
@@ -111,7 +113,60 @@ public class HttpJsonTool {
 		};
 		th.start();
 	}
-
+	public synchronized String userLoginByImei(String imei) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest = new HttpPost(ServerUrl + "/userLoginByImei");
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("CTK", "0"));
+			params.add(new BasicNameValuePair("imei", imei));
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				state403 = true;
+				httpjsontool = null;
+				return ERROR403;
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONObject json = jsonObject.getJSONObject("user");
+			manageTrain = 0;
+			reviewTrain = 1;
+			userId = json.getInt("id");
+			SecurityCheckApp.token = json.getString("token");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
 	public synchronized String login(String loginName, String password) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
@@ -121,6 +176,7 @@ public class HttpJsonTool {
 			StringBuilder builder = new StringBuilder();
 			HttpPost httpRequest = new HttpPost(ServerUrl + "/userLogin.json");
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("CTK", "0"));
 			params.add(new BasicNameValuePair("loginName", loginName));
 			params.add(new BasicNameValuePair("password", password));
 			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
@@ -169,7 +225,8 @@ public class HttpJsonTool {
 	}
 
 	public synchronized String getTrainList(int minId, String tranCode,
-			Context context,boolean ifclear) {
+			Context context, boolean ifclear, String date, int searchAll,
+			String maxStartTime) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
 			if (cookieInfo != null) {
@@ -183,11 +240,23 @@ public class HttpJsonTool {
 				params.add(new BasicNameValuePair("minId", String
 						.valueOf(minId)));
 			}
+			if (maxStartTime != null) {
+				params.add(new BasicNameValuePair("maxStartTime", maxStartTime));
+			}
 			params.add(new BasicNameValuePair("pageSize", String
 					.valueOf(PAGE_SIZE)));
+			if (searchAll != -1) {
+				params.add(new BasicNameValuePair("searchAll", String
+						.valueOf(searchAll)));
+			}
 			if (tranCode != null) {
 				if (tranCode.length() > 0) {
 					params.add(new BasicNameValuePair("trainCode", tranCode));
+				}
+			}
+			if (date != null) {
+				if (date.length() > 0) {
+					params.add(new BasicNameValuePair("startTime", date));
 				}
 			}
 			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
@@ -208,7 +277,7 @@ public class HttpJsonTool {
 				return ERROR + error;
 			}
 			JSONArray list = jsonObject.getJSONArray("trainList");
-			insertTrainList(context, list,ifclear);
+			insertTrainList(context, list, ifclear, date);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -315,7 +384,7 @@ public class HttpJsonTool {
 
 	public synchronized String addNewDynamicTrain(Context context,
 			String trainCode, String startTime, String currentTeam,
-			String teamLength) {
+			String teamLength,String date) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
 			if (cookieInfo != null) {
@@ -347,7 +416,7 @@ public class HttpJsonTool {
 				return ERROR + error;
 			}
 			JSONObject object = jsonObject.getJSONObject("train");
-			insertTrainInfo(context, object);
+			insertTrainInfo(context, object,date);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -368,7 +437,7 @@ public class HttpJsonTool {
 		return SUCCESS;
 	}
 
-	private void insertTrainList(Context context, JSONArray list,boolean ifclear)
+	private void insertTrainList(Context context, JSONArray list,boolean ifclear,String date)
 			throws JSONException {
 		DynamicListHelper helper = new DynamicListHelper(context);
 		if(ifclear){
@@ -379,34 +448,7 @@ public class HttpJsonTool {
 			db.beginTransaction();
 			for (int i = 0; i < list.length(); i++) {
 				JSONObject json = (JSONObject) list.get(i);
-				int id = json.optInt("id");
-				String board_train_code = json.optString("board_train_code");
-				long start_time = json.optLong("start_time");
-				String from_station_name = json.optString("from_station_name");
-				String to_station_name = json.optString("to_station_name");
-				String current_team = json.optString("current_team");
-				int driving_status = json.optInt("driving_status");
-				if(json.optString("driving_status").equals("null")){
-					driving_status=5;
-				}
-				int user_id = json.optInt("user_id");
-				String job_number = json.optString("job_number");
-				String user_name = json.optString("user_name");
-				String photo = json.optString("photo");
-				String phone = json.optString("phone");
-				int department_id = json.optInt("department_id");
-				String department_name = json.optString("department_name");
-				int position_id = json.optInt("position_id");
-				String position_name = json.optString("position_name");
-				String team_length = json.optString("team_length");
-				int isFinal = json.optInt("isFinal");
-				DynamicListHolder holder = new DynamicListHolder(id,
-						board_train_code, start_time, from_station_name,
-						to_station_name, current_team, driving_status, user_id,
-						job_number, user_name, photo, phone, department_id,
-						department_name, position_id, position_name,
-						team_length, isFinal, 0);
-				helper.insert(holder, db);
+				helper.insert(getDynamicHolder(json, date), db);
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
@@ -414,9 +456,7 @@ public class HttpJsonTool {
 		helper.close();
 	}
 
-	private void insertTrainInfo(Context context, JSONObject json)
-			throws JSONException {
-		DynamicListHelper helper = new DynamicListHelper(context);
+	private DynamicListHolder getDynamicHolder(JSONObject json, String date) {
 		int id = json.optInt("id");
 		String board_train_code = json.optString("board_train_code");
 		long start_time = json.optLong("start_time");
@@ -424,15 +464,15 @@ public class HttpJsonTool {
 		String to_station_name = json.optString("to_station_name");
 		String current_team = json.optString("current_team");
 		int driving_status = json.optInt("driving_status");
-		if(json.optString("driving_status").equals("null")){
-			driving_status=4;
+		if (json.optString("driving_status").equals("null")) {
+			driving_status = 5;
 		}
-		int user_id = json.optInt("user_id");
+		String user_ids = json.optString("user_ids");
 		String job_number = json.optString("job_number");
-		String user_name = json.optString("user_name");
+		String user_names = json.optString("user_names");
 		String photo = json.optString("photo");
 		String phone = json.optString("phone");
-		int department_id = json.optInt("department_id"); 
+		int department_id = json.optInt("department_id");
 		String department_name = json.optString("department_name");
 		int position_id = json.optInt("position_id");
 		String position_name = json.optString("position_name");
@@ -440,15 +480,99 @@ public class HttpJsonTool {
 		int isFinal = json.optInt("isFinal");
 		DynamicListHolder holder = new DynamicListHolder(id, board_train_code,
 				start_time, from_station_name, to_station_name, current_team,
-				driving_status, user_id, job_number, user_name, photo, phone,
+				driving_status, user_ids, job_number, user_names, photo, phone,
 				department_id, department_name, position_id, position_name,
-				team_length, isFinal, 0);
+				team_length, isFinal, 0, date);
+		return holder;
+	}
+
+	private void insertTrainInfo(Context context, JSONObject json, String date)
+			throws JSONException {
+		DynamicListHelper helper = new DynamicListHelper(context);
 		synchronized (lock.Lock) {
-			helper.insert(holder, helper.getWritableDatabase());
+			helper.insert(getDynamicHolder(json, date),
+					helper.getWritableDatabase());
 		}
 		helper.close();
 	}
+	public synchronized String getUserList(Context context, int trainid) {
+		try {
+			HttpClient client = HttpsClient.getInstance().getHttpsClient();
+			if (cookieInfo != null) {
+				((AbstractHttpClient) client).setCookieStore(cookieInfo);
+			}
+			StringBuilder builder = new StringBuilder();
+			HttpPost httpRequest;
+			httpRequest = new HttpPost(ServerUrl + "/train/detail.json?token="
+					+ SecurityCheckApp.token);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			if (trainid != -1) {
+				params.add(new BasicNameValuePair("id", String.valueOf(trainid)));
+			}
+			httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpResponse response = client.execute(httpRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 403) {
+				return ERROR403;
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+			for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+				builder.append(s);
+			}
+			L.i(builder.toString());
+			JSONObject jsonObject = new JSONObject(builder.toString());
+			String error = jsonObject.optString("error");
+			if (error.length() > 0) {
+				return ERROR + error;
+			}
+			JSONArray userListjson = jsonObject.getJSONArray("userList");
+			insertUserInfo(context,userListjson);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ERROR + "ÍøÂç´íÎó";
+		}
+		return SUCCESS;
+	}
 
+	private void insertUserInfo(Context context, JSONArray array) throws JSONException {
+		UserHelper helper = new UserHelper(context);
+		synchronized (lock.Lock) {
+			for(int i=0;i<array.length();i++){
+				JSONObject json=array.getJSONObject(i);
+				helper.insert(getUserHolder(json),
+						helper.getWritableDatabase());
+			}
+		}
+		helper.close();
+	}
+	private UserHolder getUserHolder(JSONObject json) {
+		int id = json.optInt("user_id");
+		String job_number = json.optString("job_number");
+		String user_name = json.optString("user_name");
+		String photo = json.optString("photo");
+		String phone = json.optString("phone");
+		int department_id = json.optInt("department_id");
+		String department_name = json.optString("department_name");
+		int position_id = json.optInt("position_id");
+		String position_name = json.optString("position_name");
+		UserHolder holder = new UserHolder(id, job_number, user_name, photo
+				, phone, department_id, department_name, position_id, position_name);
+		return holder;
+	}
 	public synchronized String getKeyworkAndRecord(Context context, int trainId) {
 		try {
 			HttpClient client = HttpsClient.getInstance().getHttpsClient();
@@ -807,9 +931,12 @@ public class HttpJsonTool {
 				String train_no = json.optString("TRAIN_NO");
 				String coach_type = json.optString("COACH_TYPE");
 				int limit1 = json.optInt("LIMIT1");
+				int limit2 = json.optInt("LIMIT2");
+				int passenger_num = json.optInt("PASSENGER_NUM");
+				int actual = json.optInt("ACTUAL");
 				TrainCoachHolder holder = new TrainCoachHolder(coach_no,
-						train_no, coach_type, limit1, trainDate, trainCode,
-						trainId);
+						train_no, coach_type, limit1,limit2, trainDate, trainCode,
+						trainId,passenger_num,actual);
 				helper.insert(holder, db);
 			}
 			db.setTransactionSuccessful();
@@ -890,12 +1017,11 @@ public class HttpJsonTool {
 				for (int i = 0; i < array.length(); i++) {
 					JSONObject json = (JSONObject) array.get(i);
 					int ticket_type = json.optInt("TICKET_TYPE");
-					String coach_no = json.optString("COACH_NO");
+					String coach_no = coachNo;
 					String sale_mode = json.optString("SALE_MODE");
 					String to_tele_code = json.optString("TO_TELE_CODE");
 					String office_no = json.optString("OFFICE_NO");
-					String board_train_code = json
-							.optString("BOARD_TRAIN_CODE");
+					String board_train_code = trainCode;
 					String seat_type_code = json.optString("SEAT_TYPE_CODE");
 					String seat_no = json.optString("SEAT_NO");
 					String from_station_name = json
@@ -904,9 +1030,9 @@ public class HttpJsonTool {
 					String to_station_name = json.optString("TO_STATION_NAME");
 					String ticket_source = json.optString("TICKET_SOURCE");
 					String from_tele_code = json.optString("FROM_TELE_CODE");
-					String train_date = json.optString("TRAIN_DATE");
+					String train_date = trainDate;
 					int window_no = json.optInt("WINDOW_NO");
-					float ticket_price = (float) json.optDouble("TICKET_PRICE")/10;
+					float ticket_price = (float) json.optDouble("TICKET_PRICE") / 10;
 					String ticket_no = json.optString("TICKET_NO");
 					String inner_code = json.optString("INNER_CODE");
 					String train_no = json.optString("TRAIN_NO");
@@ -1041,7 +1167,7 @@ public class HttpJsonTool {
 		helper.close();
 	}
 
-	public static final int PAGE_SIZE = 15;
+	public static final int PAGE_SIZE = 25;
 
 	public synchronized void checkOutPatrolList(Context context) {
 		try {

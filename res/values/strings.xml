@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">列车动态</string>
-    <string name="version">1.0</string>
+    <string name="version">2.2</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="drop_dowm">下拉刷新</string>

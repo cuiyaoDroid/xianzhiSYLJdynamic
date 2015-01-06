@@ -1,6 +1,6 @@
 package com.xianzhi.tool.view;
 
-
+import com.xianzhi.stool.L;
 import com.xianzhisylj.dynamic.R;
 
 import android.content.Context;
@@ -70,6 +70,7 @@ public class PullDownListView extends FrameLayout implements
 	private CheckForLongPress mPendingCheckForLongPress = new CheckForLongPress();
 	private CheckForLongPress2 mPendingCheckForLongPress2 = new CheckForLongPress2();
 	private float lastY;
+	private float lastX;
 	private boolean useempty = true;
 	// 这个标签作为测试用
 	String TAG = "PullDownListView";
@@ -518,23 +519,81 @@ public class PullDownListView extends FrameLayout implements
 		onLoadMoreComplete(null);
 	}
 
+	private float pointX;
+	private float pointY;
+
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		float y = ev.getY();
+		float x = ev.getX();
+		switch (ev.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+
+			break;
+		case MotionEvent.ACTION_MOVE:
+
+			break;
+		case MotionEvent.ACTION_UP:
+			float deli_x = x - pointX;
+			float deli_y = y - pointY;
+			if (Math.abs(deli_x) > Math.abs(deli_y)) {
+				if(Math.abs(deli_x)>30){
+					return true;
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+		return super.onInterceptTouchEvent(ev);
+	}
+
+	private filtCallBack callback;
+
+	public interface filtCallBack {
+		void filt(boolean left);
+	}
+
+	public filtCallBack getCallback() {
+		return callback;
+	}
+
+	public void setCallback(filtCallBack callback) {
+		this.callback = callback;
+	}
+
 	public boolean dispatchTouchEvent(MotionEvent e) {
 		if (isFirstLoading) {
 			return false;
 		}
 		int action;
 		float y = e.getY();
+		float x = e.getX();
 		action = e.getAction();
+
 		if (mLongPressing && action != MotionEvent.ACTION_DOWN) {
 			return false;
 		}
 		if (e.getAction() == MotionEvent.ACTION_DOWN) {
 			mLongPressing = true;
+			pointX = e.getX();
+			pointY = e.getY();
 		}
 		boolean handled = true;
 		handled = mDetector.onTouchEvent(e);
 		switch (action) {
 		case MotionEvent.ACTION_UP:
+			float deli_x = x - pointX;
+			float deli_y = y - pointY;
+			if (Math.abs(deli_x) > Math.abs(deli_y)) {
+				if (Math.abs(deli_x) > 300) {
+					if(callback!=null){
+						callback.filt(deli_x<0);
+					}
+				}
+			}
 			// boolean f1 = mListView.getTop() <= e.getY()
 			// && e.getY() <= mListView.getBottom();//cuiyao edit it
 			if (!handled && mFirstChild.getTop() == -MAX_LENGHT
@@ -560,9 +619,11 @@ public class PullDownListView extends FrameLayout implements
 			super.dispatchTouchEvent(e);
 			break;
 		case MotionEvent.ACTION_MOVE:
-			float deltaY = lastY - y;
 
+			float deltaY = lastY - y;
+			float deltaX = lastX - x;
 			lastY = y;
+			lastX = x;
 			if (!mPendingRemoved) {
 				removeCallbacks(mPendingCheckForLongPress);
 				mPendingRemoved = true;

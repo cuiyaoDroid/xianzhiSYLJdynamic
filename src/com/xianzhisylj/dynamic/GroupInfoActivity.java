@@ -46,8 +46,9 @@ public class GroupInfoActivity extends Activity{
 		progressBar=(ProgressBar)findViewById(R.id.progressBar);
 		group_info_list=(ListView)findViewById(R.id.group_info_list);
 		adapter=new GroupInfoAdapter(getApplicationContext(), groupData, R.layout.cell_group_info
-				, new String[]{"coach_no","train_code","train_type","passenger_num"}
-				, new int[]{R.id.name_txt,R.id.train_code_txt,R.id.train_type_txt,R.id.passenger_num_txt});
+				, new String[]{"coach_no","train_code","train_type","passenger_num","real_num"}
+				, new int[]{R.id.name_txt,R.id.train_code_txt,R.id.train_type_txt
+				,R.id.passenger_num_txt,R.id.real_num_txt});
 		group_info_list.setAdapter(adapter);
 		group_info_list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -60,6 +61,7 @@ public class GroupInfoActivity extends Activity{
 				intent.putExtra("trainCode", (String)groupData.get(arg2).get("trainCode"));
 				intent.putExtra("trainDate", (String)groupData.get(arg2).get("trainDate"));
 				intent.putExtra("train_type", (String)groupData.get(arg2).get("train_type"));
+				intent.putExtra("limit2", (Integer)groupData.get(arg2).get("limit2"));
 				startActivity(intent);
 			}
 		});
@@ -122,11 +124,13 @@ public class GroupInfoActivity extends Activity{
 		for(TrainCoachHolder holder:holders){
 			Map<String,Object>data=new HashMap<String, Object>();
 			data.put("train_code", holder.getTrain_no());
-			data.put("passenger_num", holder.getLimit1());
+			data.put("passenger_num", holder.getActual()+"/"+(holder.getLimit1()+holder.getLimit2()));
+			data.put("limit2", holder.getLimit2());
 			data.put("coach_no", holder.getCoach_no());
 			data.put("train_type", holder.getCoach_type());
 			data.put("trainCode", holder.getTrainCode());
 			data.put("trainDate", holder.getTrainDate());
+			data.put("real_num", holder.getPassenger());
 			groupData.add(data);
 		}
 		employess_helper.close();

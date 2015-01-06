@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 
 import android.content.Context;
 
@@ -123,6 +124,8 @@ public class HttpsClient {
 			SSLSocketFactory socketFactory = new SSLSocketFactory(keyStore, KEY_STORE_PASSWORD, trustStore);
 			Scheme sch = new Scheme(SCHEME_HTTPS, socketFactory, HTTPS_PORT);
 			httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+			httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,  20000);//连接时间20s
+			httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,  30000);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

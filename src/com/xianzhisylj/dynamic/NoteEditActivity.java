@@ -1,16 +1,15 @@
 package com.xianzhisylj.dynamic;
 
-import com.xianzhi.stool.PreferencesHelper;
-import com.xianzhi.tool.db.KeyworkAndRecordHelper;
-import com.xianzhi.tool.db.KeyworkRholder;
-import com.xianzhi.webtool.HttpJsonTool;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+
+import com.xianzhi.stool.PreferencesHelper;
+import com.xianzhi.tool.db.KeyworkAndRecordHelper;
+import com.xianzhi.tool.db.KeyworkRholder;
 
 public class NoteEditActivity extends Activity {
 	private SharedPreferences userInfo;

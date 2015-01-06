@@ -1,11 +1,5 @@
 package com.xianzhisylj.dynamic;
 
-import com.xianzhi.service.dynamicService;
-import com.xianzhi.stool.T;
-import com.xianzhi.tool.db.DynamicListHelper;
-import com.xianzhi.webtool.HttpJsonTool;
-import com.xianzhi.webtool.HttpStringMD5;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,6 +11,11 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
+import com.xianzhi.stool.T;
+import com.xianzhi.tool.db.DynamicListHelper;
+import com.xianzhi.webtool.HttpJsonTool;
+import com.xianzhi.webtool.HttpStringMD5;
 
 public class LoginActivity extends Activity{
 	private CheckBox save_check;
